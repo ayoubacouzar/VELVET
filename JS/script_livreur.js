@@ -1,8 +1,6 @@
-/* ═══════════════════════════════════════
-   VELVET — Espace Livreur — script_livreur.js
-   ═══════════════════════════════════════ */
 
-/* ─── Toast (same style as client) ──────── */
+
+
 function lvShowToast(msg, type) {
     const t = document.getElementById('lv-toast');
     if (!t) return;
@@ -12,7 +10,7 @@ function lvShowToast(msg, type) {
     t._timer = setTimeout(() => { t.className = 'lv-toast'; }, 3200);
 }
 
-/* ─── User Dropdown ──────────────────────── */
+
 function toggleLvDropdown(e) {
     e.stopPropagation();
     const wrap = document.getElementById('lvUserWrap');
@@ -30,7 +28,7 @@ document.addEventListener('click', e => {
     if (wrap && !wrap.contains(e.target)) closeLvDropdown();
 });
 
-/* ─── Modal Open / Close ─────────────────── */
+
 function openLvModal() {
     document.getElementById('lvModalBox')?.classList.add('open');
     document.getElementById('lvModalOverlay')?.classList.add('open');
@@ -43,7 +41,7 @@ function closeLvModal() {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLvModal(); });
 
-/* ─── Tab Switching ──────────────────────── */
+
 function switchLvTab(tab, btn) {
     document.querySelectorAll('.lv-tab-content').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.lv-profile-tab').forEach(b => b.classList.remove('active'));
@@ -51,7 +49,7 @@ function switchLvTab(tab, btn) {
     btn.classList.add('active');
 }
 
-/* ─── Submit: Info tab (JSON) ────────────── */
+
 async function submitLvInfo(e) {
     e.preventDefault();
     const form = document.getElementById('lvInfoForm');
@@ -59,7 +57,7 @@ async function submitLvInfo(e) {
     const tel  = document.getElementById('lvTelInput')?.value.trim();
     const zone = document.getElementById('lvZoneInput')?.value.trim();
 
-    // Client-side validation
+    
     if (!tel || !zone) {
         lvShowToast('✗ Le téléphone et la zone sont obligatoires.', 'error');
         return;
@@ -97,7 +95,7 @@ async function submitLvInfo(e) {
     }
 }
 
-/* ─── Submit: Password tab (JSON) ────────── */
+
 async function submitLvPassword(e) {
     e.preventDefault();
     const btn     = document.getElementById('lvPwdSaveBtn');
@@ -139,7 +137,7 @@ async function submitLvPassword(e) {
     }
 }
 
-/* ─── Eye toggle ──────────────────────────── */
+
 function lvToggleEye(fieldId, iconId) {
     const f = document.getElementById(fieldId);
     const i = document.getElementById(iconId);
@@ -148,7 +146,7 @@ function lvToggleEye(fieldId, iconId) {
     i.className = f.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
 }
 
-/* ─── Password strength ───────────────────── */
+
 function checkLvPwdStrength(val) {
     const fill  = document.getElementById('lvStrengthFill');
     const label = document.getElementById('lvStrengthLabel');
@@ -166,7 +164,7 @@ function checkLvPwdStrength(val) {
     else                 { fill.style.background = '#28a745'; label.style.color = '#28a745'; label.textContent = 'Fort'; }
 }
 
-/* ─── Password match ──────────────────────── */
+
 function checkLvPwdMatch() {
     const pwd     = document.getElementById('lvNewPwd')?.value;
     const confirm = document.getElementById('lvConfirmPwd');

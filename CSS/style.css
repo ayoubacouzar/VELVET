@@ -1,10 +1,8 @@
-/* ═══════════════════════════════════════════════════════════
-   style.css — VELVET · Styles partagés (toutes pages)
-   ══════════════════════════════════════════════════════════ */
+
 
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap');
 
-/* ── Variables globales ─────────────────────────────────── */
+
 :root {
     --black:      #000000;
     --white:      #ffffff;
@@ -31,9 +29,6 @@ body {
 img { display: block; max-width: 100%; }
 
 
-/* ═══════════════════════════════════════════════════════════
-   MINI-BAR
-   ══════════════════════════════════════════════════════════ */
 .mini-bar {
     background: #030303;
     color: #fdfbfb;
@@ -59,9 +54,6 @@ img { display: block; max-width: 100%; }
 .mini-bar-slide.active { opacity: 1; transform: translateY(0); }
 
 
-/* ═══════════════════════════════════════════════════════════
-   NAVBAR
-   ══════════════════════════════════════════════════════════ */
 .nav-bar {
     background: #f4f4f4;
     border-bottom: 1px solid rgba(106,105,104,0.15);
@@ -102,7 +94,7 @@ img { display: block; max-width: 100%; }
 .nav-link:hover { color: var(--text-muted) !important; }
 .nav-link i { font-size: 8px; }
 
-/* Dropdown */
+
 .nav-dropdown {
     position: absolute;
     top: calc(100% + 1px);
@@ -137,7 +129,7 @@ img { display: block; max-width: 100%; }
     background: rgba(255,255,255,0.04);
 }
 
-/* Nav icons with tooltip */
+
 .nav-icon-wrap {
     position: relative;
     display: inline-flex;
@@ -183,7 +175,7 @@ img { display: block; max-width: 100%; }
 }
 .nav-icon-wrap:hover .nav-tooltip { opacity: 1; visibility: visible; }
 
-/* ── Nav user dropdown ─────────────────────────────────── */
+
 .nav-user-item {
     position: relative;
     display: inline-flex;
@@ -236,7 +228,7 @@ img { display: block; max-width: 100%; }
 .nav-user-logout { color: #c0392b !important; }
 .nav-user-logout:hover { background: #fff5f5 !important; }
 
-/* ── Search overlay ────────────────────────────────────── */
+
 .search-overlay {
     position: fixed; inset: 0;
     background: rgba(0,0,0,0.55);
@@ -296,9 +288,6 @@ img { display: block; max-width: 100%; }
 .search-tag:hover { background: rgba(255,255,255,0.22); color: #fff; }
 
 
-/* ═══════════════════════════════════════════════════════════
-   FOOTER
-   ══════════════════════════════════════════════════════════ */
 footer {
     background: #070707;
     border-top: 1px solid rgba(255,255,255,0.07);
@@ -356,7 +345,7 @@ footer {
 }
 .footer-links a:hover { color: #fff; }
 
-/* Footer contact form */
+
 .footer-form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -437,9 +426,6 @@ footer {
 }
 
 
-/* ═══════════════════════════════════════════════════════════
-   AUTH PAGES (login + inscription)
-   ══════════════════════════════════════════════════════════ */
 .auth-page-body {
     background: var(--light-gray);
     min-height: 100vh;
@@ -506,7 +492,7 @@ footer {
 }
 .auth-link a:hover { border-color: var(--black); }
 
-/* Alerts */
+
 .alert-error {
     background: #fff5f5;
     border-left: 3px solid var(--red);
@@ -534,7 +520,7 @@ footer {
 .alert-success i { margin-top: 2px; flex-shrink: 0; }
 .alert-success a { color: var(--black); font-weight: 700; text-decoration: underline; }
 
-/* Form fields */
+
 .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .form-group  { margin-bottom: 18px; }
 .form-label {
@@ -572,7 +558,7 @@ footer {
     box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
 }
 
-/* Password input wrapper */
+
 .input-wrap { position: relative; }
 .input-wrap .form-input { padding-right: 44px; }
 .toggle-pwd {
@@ -590,7 +576,7 @@ footer {
 }
 .toggle-pwd:hover { color: var(--black); }
 
-/* Password strength */
+
 .strength-bar {
     height: 3px;
     background: var(--mid-gray);
@@ -612,10 +598,10 @@ footer {
     font-weight: 700;
 }
 
-/* Ville autre */
+
 #ville_autre_container { margin-top: 10px; display: none; }
 
-/* Submit button */
+
 .btn-auth-submit {
     width: 100%;
     padding: 14px;
@@ -643,11 +629,6 @@ footer {
 .btn-auth-submit:active { transform: scale(0.98); }
 
 
-/* ═══════════════════════════════════════════════════════════
-   CLIENT PAGE (index.php)
-   ══════════════════════════════════════════════════════════ */
-
-/* Animations */
 @keyframes fadeUp {
     from { opacity: 0; transform: translateY(32px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -665,7 +646,7 @@ footer {
 }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
-/* ── Hero ── */
+
 .welcome-hero {
     background: var(--black);
     color: var(--white);
@@ -726,9 +707,7 @@ footer {
 }
 .hero-sub em { color: rgba(255,255,255,0.65); font-style: italic; }
 
-/* ── Vertical stats column — diamond/slanted shape ── */
-/* (styles moved to toast section above for consolidated output)
-   keeping this comment to preserve original line structure */
+
 .hsr-label-placeholder {
     font-size: 10px;
     letter-spacing: 2.5px;
@@ -738,7 +717,7 @@ footer {
     text-align: right;
 }
 
-/* ── Sections ── */
+
 .section-light { background: var(--light-gray); }
 .section-dark  { background: var(--onyx); }
 
@@ -770,7 +749,7 @@ footer {
 }
 .see-all-link:hover { color: var(--black); }
 
-/* Empty state */
+
 .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
 .empty-state i { font-size: 2.5rem; margin-bottom: 16px; display: block; opacity: 0.3; }
 .empty-state p { font-size: 14px; margin-bottom: 20px; }
@@ -806,7 +785,7 @@ footer {
 }
 .btn-white-sm:hover { background: rgba(255,255,255,0.2); color: #fff; }
 
-/* ── Commandes ── */
+
 .orders-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -862,8 +841,7 @@ footer {
 .badge-processing { background:#fff8e1; color:#f57f17; }
 .badge-cancelled  { background:#fce4ec; color:#c62828; }
 
-/* ── Panier ── */
-/* ── Panier preview — horizontal rows (client/index.php) ── */
+
 .pv-list {
     display: flex;
     flex-direction: column;
@@ -940,7 +918,7 @@ footer {
 .pv-arrow { font-size: 11px; color: #ccc; transition: transform .2s; }
 .pv-item:hover .pv-arrow { transform: translateX(3px); color: #999; }
 
-/* CTA button below list */
+
 .pv-cta { margin-top: 20px; text-align: right; }
 .pv-cta-btn {
     display: inline-flex;
@@ -970,7 +948,7 @@ footer {
 }
 .btn-white-outline:hover { border-color:rgba(255,255,255,0.6); color:#fff; }
 
-/* ── Favoris ── */
+
 .fav-card {
     background: var(--white);
     border-radius: 16px; overflow: hidden;
@@ -1018,7 +996,7 @@ footer {
 }
 .see-all-btn:hover { color:var(--text-muted); border-color:var(--text-muted); }
 
-/* ── Modals ── */
+
 .modal-overlay {
     position:fixed; inset:0;
     background:rgba(0,0,0,0.65);
@@ -1092,7 +1070,7 @@ footer {
 .req { color: #c0392b; font-size: 13px; }
 .modal-required-note { font-size: 11px; color: var(--text-muted); margin-top: 4px; margin-bottom: 0; }
 
-/* Footer form feedback */
+
 .form-success {
     background: #f0fff4; border-left: 3px solid #27ae60; color: #1e7e34;
     padding: 10px 14px; font-size: 12px; border-radius: 0 8px 8px 0; margin-bottom: 14px;
@@ -1125,8 +1103,7 @@ footer {
 .order-modal-total .total-val { font-family:'Anton',sans-serif; font-size:1.5rem; }
 .modal-loading { text-align:center; padding:40px; color:var(--text-muted); font-size:1.5rem; }
 
-/* Toast */
-/* ── Toast — 10s animated ── */
+
 .toast-msg {
     position: fixed;
     bottom: 28px;
@@ -1153,7 +1130,7 @@ footer {
 .toast-msg.warning { background: #d68910; }
 .toast-msg.info    { background: #2471a3; }
 
-/* ── Diamond / slanted stats ── */
+
 .hero-stats-col {
     display: flex;
     flex-direction: column;
@@ -1196,16 +1173,13 @@ footer {
     font-weight: 500;
 }
 
-/* ── Cart/Fav button states ── */
+
 [data-add-cart].loading,
 [data-toggle-fav].loading { opacity: .6; pointer-events: none; }
 [data-add-cart].added { background: #27ae60 !important; color: #fff !important; }
 [data-toggle-fav].active i { color: #e74c3c; }
 
 
-/* ═══════════════════════════════════════════════════════════
-   RESPONSIVE
-   ══════════════════════════════════════════════════════════ */
 @media (max-width: 991px) {
     .nav-left { display: none; }
     .nav-container { grid-template-columns: auto 1fr; }
@@ -1229,7 +1203,7 @@ footer {
     .panier-grid            { grid-template-columns: 1fr; }
 }
 
-/* ── Footer form feedback (dark background overrides) ─── */
+
 footer .form-success {
     background: rgba(39,174,96,0.15);
     border-left: 3px solid #27ae60;
@@ -1250,9 +1224,6 @@ footer .form-error {
 }
 
 
-/* ═══════════════════════════════════════════════════════════
-   PAGE HERO (favoris.php / panier.php)
-   ══════════════════════════════════════════════════════════ */
 .page-hero {
     background: #111;
     color: #fff;
@@ -1274,9 +1245,7 @@ footer .form-error {
     font-style: italic;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PANIER PAGE
-   ══════════════════════════════════════════════════════════ */
+
 .cart-list { display: flex; flex-direction: column; gap: 1px; }
 
 .cart-item {
@@ -1332,7 +1301,7 @@ footer .form-error {
 }
 .cart-item-subtotal span { font-size: 13px; color: var(--text-muted); }
 
-/* Cart summary */
+
 .cart-summary {
     background: #111;
     color: #fff;
@@ -1405,9 +1374,7 @@ footer .form-error {
     .cart-item-subtotal { display: none; }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PROFILE MODAL — Tabs + Password
-   ══════════════════════════════════════════════════════════ */
+
 .modal-box-profile { max-width: 560px; overflow: hidden; }
 
 .profile-tabs {
@@ -1452,7 +1419,7 @@ footer .form-error {
 .profile-tab-content { display: none; }
 .profile-tab-content.active { display: block; }
 
-/* Password inputs inside modal */
+
 .modal-pwd-input {
     width: 100%; border: 1.5px solid var(--mid-gray); border-radius: 10px;
     padding: 12px 46px 12px 16px;
@@ -1473,9 +1440,7 @@ footer .form-error {
 .match-ok  { color: #27ae60; }
 .match-err { color: #c0392b; }
 
-/* ═══════════════════════════════════════════════════════════
-   FAVORIS PAGE — Editorial masonry grid
-   ══════════════════════════════════════════════════════════ */
+
 .fav-page-body { background: var(--offwhite); }
 
 .fav-page-header {
@@ -1528,7 +1493,7 @@ footer .form-error {
 
 .fav-main { padding: 48px 0 80px; }
 
-/* Masonry-style using CSS columns */
+
 .fav-masonry {
     column-count: 3;
     column-gap: 20px;
@@ -1564,7 +1529,7 @@ footer .form-error {
 }
 .fav-brick:hover .fav-brick-img img { transform: scale(1.06); }
 
-/* Hover overlay */
+
 .fav-brick-overlay {
     position: absolute; inset: 0;
     background: rgba(0,0,0,0.5);
@@ -1626,7 +1591,7 @@ footer .form-error {
 .fav-price-now { font-family: 'Anton', sans-serif; font-size: 18px; }
 .fav-price-old { font-size: 12px; color: #aaa; text-decoration: line-through; }
 
-/* Empty state */
+
 .fav-empty {
     text-align: center;
     padding: 100px 20px;
@@ -1650,9 +1615,7 @@ footer .form-error {
 }
 .fav-empty-btn:hover { background: #222; color: #fff; }
 
-/* ═══════════════════════════════════════════════════════════
-   PANIER PAGE — Split layout
-   ══════════════════════════════════════════════════════════ */
+
 .cart-layout {
     display: grid;
     grid-template-columns: 1fr 380px;
@@ -1661,7 +1624,7 @@ footer .form-error {
 @media (max-width: 1100px) { .cart-layout { grid-template-columns: 1fr 340px; } }
 @media (max-width: 900px)  { .cart-layout { grid-template-columns: 1fr; } }
 
-/* Left column */
+
 .cart-col-items {
     display: flex;
     flex-direction: column;
@@ -1704,7 +1667,7 @@ footer .form-error {
     .cart-items-scroll { padding: 0 20px 40px; }
 }
 
-/* Cart row */
+
 .cart-row {
     display: grid;
     grid-template-columns: 36px 100px 1fr auto 120px 100px;
@@ -1764,7 +1727,7 @@ footer .form-error {
     font-size: 12px; color: var(--text-muted); margin-left: 3px;
 }
 
-/* Responsive */
+
 @media (max-width: 768px) {
     .cart-row {
         grid-template-columns: 70px 1fr auto;
@@ -1778,7 +1741,7 @@ footer .form-error {
     .cart-row-price-mobile { display: block; margin-top: 4px; font-size: 12px; }
 }
 
-/* Empty state */
+
 .cart-empty-state {
     text-align: center;
     padding: 100px 20px;
@@ -1804,7 +1767,7 @@ footer .form-error {
 }
 .cart-empty-cta:hover { background: #222; color: #fff; }
 
-/* Right column — summary */
+
 .cart-col-summary {
     background: #0a0a0a;
     position: sticky; top: 108px;
@@ -1889,9 +1852,7 @@ footer .form-error {
     .cart-summary-wrap { padding: 32px 24px 40px; }
 }
 
-/* ═══════════════════════════════════════════════════════════
-   MODAL — Sauvegarder bar
-   ══════════════════════════════════════════════════════════ */
+
 .modal-save-bar {
     display: flex;
     align-items: center;
@@ -1920,7 +1881,7 @@ footer .form-error {
     flex-shrink: 0;
 }
 
-/* The main Sauvegarder CTA button */
+
 .btn-modal-sauvegarder {
     display: inline-flex;
     align-items: center;
@@ -1956,9 +1917,7 @@ footer .form-error {
 }
 .btn-modal-sauvegarder i { font-size: 13px; }
 
-/* ═══════════════════════════════════════════════════════════
-   SHARED PAGE HEADER (favoris & panier)
-   ══════════════════════════════════════════════════════════ */
+
 .vp-page-title {
     border-bottom: 1px solid var(--mid-gray);
     padding: 28px 0 22px;
@@ -1996,9 +1955,7 @@ footer .form-error {
     margin-left: 6px;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   FAVORIS PAGE — Clean grid
-   ══════════════════════════════════════════════════════════ */
+
 .vp-fav-section { padding-bottom: 72px; }
 
 .vp-fav-card {
@@ -2025,7 +1982,7 @@ footer .form-error {
     color: #ccc; font-size: 2rem;
 }
 
-/* Promo badge */
+
 .vp-fav-badge {
     position: absolute;
     top: 10px; left: 10px;
@@ -2040,7 +1997,7 @@ footer .form-error {
     z-index: 2;
 }
 
-/* Heart remove button — top right */
+
 .vp-fav-remove-icon {
     position: absolute;
     top: 10px; right: 10px;
@@ -2062,7 +2019,7 @@ footer .form-error {
     transform: scale(1.1);
 }
 
-/* "Ajouter au panier" slides up on hover */
+
 .vp-fav-hover {
     position: absolute;
     bottom: 0; left: 0; right: 0;
@@ -2087,7 +2044,7 @@ footer .form-error {
 }
 .vp-fav-cart-btn:hover { background: #222; }
 
-/* Info below image */
+
 .vp-fav-info { padding: 12px 4px 8px; }
 .vp-fav-cat {
     font-size: 9.5px;
@@ -2107,17 +2064,15 @@ footer .form-error {
 }
 .vp-fav-price { display: flex; align-items: center; gap: 8px; }
 
-/* ── Shared price classes ── */
+
 .vp-price-sale { font-weight: 700; color: #c0392b; font-size: 15px; }
 .vp-price-old  { font-size: 12px; color: var(--text-muted); text-decoration: line-through; }
 .vp-price-reg  { font-weight: 700; font-size: 15px; color: var(--black); }
 
-/* ═══════════════════════════════════════════════════════════
-   PANIER PAGE — Clean cart
-   ══════════════════════════════════════════════════════════ */
+
 .vp-cart-section { padding-bottom: 72px; }
 
-/* Delivery banner */
+
 .vp-delivery-banner {
     background: var(--light-gray);
     border: 1px solid var(--mid-gray);
@@ -2149,7 +2104,7 @@ footer .form-error {
     transition: width .6s ease;
 }
 
-/* Cart item row */
+
 .vp-cart-list { display: flex; flex-direction: column; }
 
 .vp-cart-item {
@@ -2226,7 +2181,7 @@ footer .form-error {
     .vp-cart-subtotal { font-size: 1rem; }
 }
 
-/* Order summary box */
+
 .vp-order-summary {
     background: var(--white);
     border: 1px solid var(--mid-gray);
@@ -2311,7 +2266,7 @@ footer .form-error {
 }
 .vp-summary-badges i { margin-right: 5px; }
 
-/* ── Panier badge navbar ── */
+
 .nav-panier-wrap { position: relative; }
 .panier-nav-badge {
     position: absolute;
@@ -2328,7 +2283,7 @@ footer .form-error {
     line-height: 1;
     z-index: 10;
 }
-/* ── Product card v2 styles (copied from main.css for client pages) ── */
+
 .product-card-v2 { background:#fff;border-radius:12px;overflow:hidden;transition:transform .3s ease,box-shadow .3s ease;box-shadow:0 2px 12px rgba(0,0,0,.05);position:relative; }
 .product-card-v2:hover { transform:translateY(-5px);box-shadow:0 10px 28px rgba(0,0,0,.10); }
 .product-card-v2 .pcard-img { position:relative;overflow:hidden; }
@@ -2347,7 +2302,7 @@ footer .form-error {
 .product-card-v2 .pcard-price .p-promo  { font-weight:800;font-size:15px;color:#e74c3c; }
 .product-card-v2 .pcard-price .p-old    { font-size:12px;color:#aaa;text-decoration:line-through; }
 
-/* ── Nav icon active state (logged-in user) ── */
+
 .nav-icon--active {
     color: #1a1a1a !important;
     font-size: 16px;
@@ -2357,7 +2312,6 @@ footer .form-error {
 .nav-icon--active:hover { color: var(--text-muted) !important; }
 
 
-/* ── Velvet elegant notices (replaces Bootstrap alerts) ── */
 .velvet-notice {
     display: flex;
     align-items: center;
@@ -2379,9 +2333,7 @@ footer .form-error {
 .velvet-notice.error   { background: #fce4ec; color: #b71c1c; border-left: 4px solid #e53935; }
 .velvet-notice.warning { background: #fff8e1; color: #7c5c00; border-left: 4px solid #f0a500; }
 
-/* ══════════════════════════════════════════
-   VELVET PAGINATION
-   ══════════════════════════════════════════ */
+
 .velvet-pagination {
     display: flex;
     align-items: center;
@@ -2421,9 +2373,7 @@ footer .form-error {
     letter-spacing: 1px;
 }
 
-/* ══════════════════════════════════════════════════════════
-   ORDER DETAIL MODAL — odi / odm classes
-   ══════════════════════════════════════════════════════════ */
+
 .order-detail-meta {
     background: #f9f7f5;
     border-radius: 12px;
@@ -2496,9 +2446,7 @@ footer .form-error {
     color: #000;
 }
 
-/* ══════════════════════════════════════════════════════════
-   PROD-CARD — Design unifié toutes pages produits
-   ══════════════════════════════════════════════════════════ */
+
 .prod-card {
     background: #fff;
     border-radius: 14px;

@@ -6,7 +6,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 $message = "";
 $messageType = "";
 
-// ── SUPPRIMER SOUS-CATEGORIE ──
+
 if (isset($_GET['delete_sc'])) {
     $id = (int)$_GET['delete_sc'];
     $check = $pdo->prepare("SELECT COUNT(*) FROM produit WHERE ID_SOUS_CATEGORIE = ?");
@@ -21,7 +21,7 @@ if (isset($_GET['delete_sc'])) {
     }
 }
 
-// ── SUPPRIMER CATEGORIE ──
+
 if (isset($_GET['delete_cat'])) {
     $id = (int)$_GET['delete_cat'];
     $check = $pdo->prepare("SELECT COUNT(*) FROM sous_categorie WHERE ID_CATEGORIE = ?");
@@ -36,7 +36,7 @@ if (isset($_GET['delete_cat'])) {
     }
 }
 
-// ── AJOUTER CATEGORIE ──
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add_cat') {
     $nom = trim($_POST['nom_categorie'] ?? '');
     if (empty($nom)) {
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add_c
     }
 }
 
-// ── MODIFIER CATEGORIE ──
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'edit_cat') {
     $id  = (int)$_POST['id_categorie'];
     $nom = trim($_POST['nom_categorie'] ?? '');
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'edit_
     }
 }
 
-// ── AJOUTER SOUS-CATEGORIE ──
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add_sc') {
     $nom   = trim($_POST['nom_sc']      ?? '');
     $desc  = trim($_POST['desc_sc']     ?? '');
@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add_s
     }
 }
 
-// ── MODIFIER SOUS-CATEGORIE ──
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'edit_sc') {
     $id     = (int)$_POST['id_sc'];
     $nom    = trim($_POST['nom_sc']      ?? '');
@@ -110,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'edit_
     }
 }
 
-// ── CHARGER DONNÉES (ordre par ID décroissant) ──
+
 $categories = $pdo->query("SELECT * FROM categorie ORDER BY ID_CATEGORIE DESC")->fetchAll(PDO::FETCH_ASSOC);
 
 $sousCategories = $pdo->query("

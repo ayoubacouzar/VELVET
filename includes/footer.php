@@ -1,8 +1,8 @@
 <?php
-// ─── includes/footer.php ─────────────────────────────────────────────────
+
 $base = $base ?? '';
 
-// Catégories pour les liens "Collections"
+
 $_footer_cats = $pdo->query("
     SELECT ID_CATEGORIE, NOM_CATEGORIE FROM categorie ORDER BY ID_CATEGORIE
 ")->fetchAll(PDO::FETCH_ASSOC);
@@ -11,7 +11,7 @@ $_footer_cats = $pdo->query("
     <div class="container-xl px-4">
         <div class="row g-5">
 
-            <!-- Logo + tagline + réseaux sociaux -->
+            
             <div class="col-12 col-lg-4">
                 <div class="footer-logo">
                     <img src="<?= $base ?>images/VELVET_LOGO_blanc.png" alt="VELVET">
@@ -30,7 +30,7 @@ $_footer_cats = $pdo->query("
                 </div>
             </div>
 
-            <!-- Collections (dynamique depuis la BDD) -->
+            
             <div class="col-6 col-sm-3 col-lg-2">
                 <p class="footer-heading">Collections</p>
                 <ul class="footer-links">
@@ -48,15 +48,12 @@ $_footer_cats = $pdo->query("
                     </li>
                     <?php endforeach; ?>
                     <li>
-                        <a href="<?= $base ?>client/nouvelles-arrivees.php">Tous les produits</a>
-                    </li>
-                    <li>
-                        <a href="<?= $base ?>client/nouvelles-arrivees.php">Promotions</a>
+                        <a href="<?= $base ?>client/nouvelles-arrivees.php">Nouvelles Arrivées</a>
                     </li>
                 </ul>
             </div>
 
-            <!-- Service client -->
+            
             <div class="col-6 col-sm-3 col-lg-2">
                 <p class="footer-heading">Service Client</p>
                 <ul class="footer-links">
@@ -64,16 +61,14 @@ $_footer_cats = $pdo->query("
                     <li><a href="<?= $base ?>client/index.php">Mes Commandes</a></li>
                     <li><a href="<?= $base ?>client/panier.php">Mon Panier</a></li>
                     <li><a href="<?= $base ?>client/favoris.php">Mes Favoris</a></li>
-                    <li><a href="<?= $base ?>login.php">Connexion</a></li>
-                    <li><a href="<?= $base ?>client/inscription.php">Créer un compte</a></li>
                 </ul>
             </div>
 
-            <!-- Formulaire de contact -->
+            
             <div class="col-12 col-lg-4">
                 <p class="footer-heading">Nous Contacter</p>
                 <div id="footer-form-msg" style="display:none;margin-bottom:10px;"></div>
-                <form class="footer-form" id="footerContactForm" onsubmit="submitContact(event)">
+                <form class="footer-form" id="footerContactForm" onsubmit="submitContact(event)" novalidate>
                     <input type="text"     name="nom"     placeholder="Nom"      required>
                     <input type="text"     name="prenom"  placeholder="Prénom"   required>
                     <input type="email"    name="email"   placeholder="Email (optionnel)">
@@ -100,23 +95,42 @@ $_footer_cats = $pdo->query("
 <script>
 async function submitContact(e) {
     e.preventDefault();
-    const form = e.target;
-    const data = new FormData(form);
+    var form = e.target;
+    var nom = form.querySelector('[name="nom"]').value.trim();
+    var prenom = form.querySelector('[name="prenom"]').value.trim();
+    var problem = form.querySelector('[name="problem"]').value.trim();
+    var msg = document.getElementById('footer-form-msg');
+
+    if (!nom || !prenom || !problem) {
+        var missing = [];
+        if (!nom) missing.push('Nom');
+        if (!prenom) missing.push('Prénom');
+        if (!problem) missing.push('Message');
+        msg.style.cssText = 'display:block;color:#ff6b6b;font-size:13px;margin-bottom:10px;background:rgba(255,107,107,0.1);padding:10px 16px;border-radius:8px;border:1px solid rgba(255,107,107,0.25);';
+        msg.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> Champ(s) requis : ' + missing.join(', ');
+        setTimeout(function(){ msg.style.display = 'none'; }, 4000);
+        return;
+    }
+
+    var data = new FormData(form);
     data.append('action', 'contact');
 
-    const res  = await fetch('<?= $base ?>contact.php', { method: 'POST', body: data });
-    const json = await res.json().catch(() => null);
-
-    const msg = document.getElementById('footer-form-msg');
-    msg.style.display = 'block';
-    if (json && json.success) {
-        msg.style.cssText = 'display:block;color:#4CAF50;font-size:13px;margin-bottom:10px;';
-        msg.innerHTML = '<i class="fas fa-check-circle me-1"></i> Message envoyé avec succès !';
-        form.reset();
-    } else {
-        msg.style.cssText = 'display:block;color:#e74c3c;font-size:13px;margin-bottom:10px;';
-        msg.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i> ' + (json?.message || 'Erreur, veuillez réessayer.');
+    try {
+        var res  = await fetch('<?= $base ?>contact.php', { method: 'POST', body: data });
+        var json = await res.json().catch(function(){ return null; });
+        msg.style.display = 'block';
+        if (json && json.success) {
+            msg.style.cssText = 'display:block;color:#4CAF50;font-size:13px;margin-bottom:10px;background:rgba(76,175,80,0.1);padding:10px 16px;border-radius:8px;border:1px solid rgba(76,175,80,0.25);';
+            msg.innerHTML = '<i class="fas fa-check-circle me-1"></i> Message envoyé avec succès !';
+            form.reset();
+        } else {
+            msg.style.cssText = 'display:block;color:#ff6b6b;font-size:13px;margin-bottom:10px;background:rgba(255,107,107,0.1);padding:10px 16px;border-radius:8px;border:1px solid rgba(255,107,107,0.25);';
+            msg.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i> ' + (json && json.message ? json.message : 'Erreur, veuillez réessayer.');
+        }
+    } catch(err) {
+        msg.style.cssText = 'display:block;color:#ff6b6b;font-size:13px;margin-bottom:10px;background:rgba(255,107,107,0.1);padding:10px 16px;border-radius:8px;border:1px solid rgba(255,107,107,0.25);';
+        msg.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i> Erreur de connexion.';
     }
-    setTimeout(() => { msg.style.display = 'none'; }, 4000);
+    setTimeout(function(){ msg.style.display = 'none'; }, 4000);
 }
 </script>

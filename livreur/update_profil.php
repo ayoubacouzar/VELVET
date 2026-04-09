@@ -1,5 +1,5 @@
 <?php
-// livreur/update_profil.php — JSON endpoint for profile updates
+
 if (session_status() == PHP_SESSION_NONE) session_start();
 header('Content-Type: application/json');
 
@@ -12,7 +12,7 @@ require_once __DIR__ . '/../db.php';
 
 $action = $_POST['action'] ?? '';
 
-// ── Update info ────────────────────────────────────────
+
 if ($action === 'update_info') {
     $telephone = trim($_POST['telephone'] ?? '');
     $zone      = trim($_POST['zone_livraison'] ?? '');
@@ -44,7 +44,7 @@ if ($action === 'update_info') {
     exit;
 }
 
-// ── Update password ────────────────────────────────────
+
 if ($action === 'update_password') {
     $mdp     = $_POST['mot_de_passe'] ?? '';
     $confirm = $_POST['confirm_mot_de_passe'] ?? '';

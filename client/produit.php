@@ -1,20 +1,17 @@
 <?php
-// ════════════════════════════════════════════════════════════════
-//  produit_detail.php — Page détail produit
-//  BDD : bd_velvet
-//  URL : produit_detail.php?id=44
-// ════════════════════════════════════════════════════════════════
+
+
 session_start();
 require_once __DIR__ . '/../db.php';
 
-// ── Récupérer l'ID produit ────────────────────────────────────────
+
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id <= 0) {
     header('Location: index.php');
     exit;
 }
 
-// ── Produit + sous-catégorie ──────────────────────────────────────
+
 try {
     $stmt = $pdo->prepare("
         SELECT p.*, sc.NOM_SOUS_CATEGORIE, c.NOM_CATEGORIE
@@ -34,7 +31,7 @@ if (!$produit) {
     exit;
 }
 
-// ── Tailles + couleurs + stock ────────────────────────────────────
+
 try {
     $stmt = $pdo->prepare("
         SELECT TAILLE, COULEUR, QUANTITE
@@ -48,11 +45,11 @@ try {
     $modeles = [];
 }
 
-// ── Grouper couleurs uniques ──────────────────────────────────────
+
 $couleurs = array_unique(array_column($modeles, 'COULEUR'));
 $couleurs = array_filter($couleurs);
 
-// ── Tailles disponibles ───────────────────────────────────────────
+
 $tailles_dispo = [];
 foreach ($modeles as $m) {
     $tailles_dispo[$m['TAILLE']] = [
@@ -61,7 +58,7 @@ foreach ($modeles as $m) {
     ];
 }
 
-// ── Images disponibles — chemins corrigés pour client/
+
 $images = array_filter([
     $produit['IMAGE1'] ? '../' . $produit['IMAGE1'] : null,
     $produit['IMAGE2'] ? '../' . $produit['IMAGE2'] : null,
@@ -70,7 +67,7 @@ $images = array_filter([
 if (empty($images)) $images = ['../images/VELVET_LOGO_blanc.png'];
 $images = array_values($images);
 
-// ── 4 produits similaires (même sous-catégorie) ───────────────────
+
 try {
     $stmt = $pdo->prepare("
         SELECT p.ID_PRODUIT, p.NOM_PRODUIT, p.IMAGE1, p.PRIX, p.EN_PROMO, p.PRIX_PROMO
@@ -85,7 +82,7 @@ try {
     $similaires = [];
 }
 
-// ── Prix affiché ──────────────────────────────────────────────────
+
 $prix_final  = (!empty($produit['EN_PROMO']) && !empty($produit['PRIX_PROMO']))
     ? $produit['PRIX_PROMO']
     : $produit['PRIX'];
@@ -94,10 +91,10 @@ $reduction   = $en_promo
     ? round((1 - $produit['PRIX_PROMO'] / $produit['PRIX']) * 100)
     : 0;
 
-// ── Stock total ───────────────────────────────────────────────────
+
 $stock_total = array_sum(array_column($modeles, 'QUANTITE'));
 
-// ── Est-ce que le client a ce produit en favori ? ─────────────────
+
 $isFavori = false;
 if (!empty($_SESSION['client_id'])) {
     $stmtFv = $pdo->prepare("SELECT 1 FROM aime WHERE ID_CLIENT = ? AND ID_PRODUIT = ?");
@@ -105,13 +102,13 @@ if (!empty($_SESSION['client_id'])) {
     $isFavori = (bool)$stmtFv->fetch();
 }
 
-// ── Avis clients ─────────────────────────────────────────────────
+
 $avisListe = [];
 $moyenneNote = 0;
 $avisMsg = '';
 $avisMsgType = '';
 
-// Traitement soumission avis
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['soumettre_avis']) && !empty($_SESSION['client_id'])) {
     $note = max(1, min(5, (int)($_POST['note'] ?? 5)));
     $commentaire = trim($_POST['commentaire'] ?? '');
@@ -131,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['soumettre_avis']) && 
     }
 }
 
-// Récupérer les avis
+
 try {
     $stmtAvis = $pdo->prepare("
         SELECT a.NOTE, a.COMMENTAIRE, a.DATE_AVIS,
@@ -155,15 +152,14 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../images/VELVET_LOGO_blanc.png">
     <title><?= htmlspecialchars($produit['NOM_PRODUIT']) ?> — Velvet Fashion</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../CSS/style.css">
     <style>
-        /* ════════════════════════════════
-           VARIABLES & BASE
-        ════════════════════════════════ */
+        
         :root {
             --noir: #0a0a0a;
             --blanc: #fafaf8;
@@ -179,7 +175,7 @@ try {
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: var(--blanc); color: var(--noir); }
 
-        /* ════ BREADCRUMB ════ */
+        
         .breadcrumb-velvet {
             background: var(--gris);
             padding: 14px 0;
@@ -198,10 +194,10 @@ try {
         }
         .breadcrumb-velvet i { font-size: 7px; color: #ccc; }
 
-        /* ════ SECTION PRINCIPALE ════ */
+        
         .detail-section { padding: 40px 0 60px; }
 
-        /* ════ GALERIE PHOTOS ════ */
+        
         .gallery-wrap { position: sticky; top: 90px; }
 
         .main-photo {
@@ -221,7 +217,7 @@ try {
         }
         .main-photo:hover img { transform: scale(1.04); }
 
-        /* Badge sur la photo */
+        
         .photo-badge {
             position: absolute; top: 20px; left: 20px; z-index: 2;
             display: flex; flex-direction: column; gap: 6px;
@@ -236,7 +232,7 @@ try {
         .badge-pill.dispo  { background: rgba(255,255,255,0.92); color: var(--noir);
                              backdrop-filter: blur(4px); }
 
-        /* Thumbnails */
+        
         .thumbs-wrap {
             display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap;
         }
@@ -253,7 +249,7 @@ try {
         .thumb:hover { border-color: var(--gris-mid); transform: translateY(-2px); }
         .thumb.active:hover { border-color: var(--noir); }
 
-        /* ════ INFOS PRODUIT ════ */
+        
         .product-details { padding-left: 30px; }
 
         .detail-category {
@@ -275,7 +271,7 @@ try {
             color: var(--noir);
         }
 
-        /* ── Prix ── */
+        
         .detail-price-wrap { display: flex; align-items: baseline; gap: 14px; margin-bottom: 24px; }
         .detail-price {
             font-family: 'Inter', sans-serif;
@@ -294,10 +290,10 @@ try {
             padding: 4px 10px; border-radius: 6px;
         }
 
-        /* ── Divider ── */
+        
         .divider { height: 1px; background: var(--gris-mid); margin: 24px 0; }
 
-        /* ── Description ── */
+        
         .detail-description {
             font-family: 'Inter', sans-serif;
             font-size: 0.9rem; line-height: 1.7;
@@ -305,7 +301,7 @@ try {
             margin-bottom: 24px;
         }
 
-        /* ── Couleurs ── */
+        
         .section-label {
             font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase;
             color: var(--gris-text); margin-bottom: 12px; font-weight: 600;
@@ -333,7 +329,7 @@ try {
         }
         .couleur-dot:hover::after { opacity: 1; }
 
-        /* ── Tailles ── */
+        
         .tailles-header {
             display: flex; justify-content: space-between;
             align-items: center; margin-bottom: 12px;
@@ -376,7 +372,7 @@ try {
         .taille-btn.low-stock { border-color: #ffb347; }
         .taille-btn.low-stock.active { background: #ff8c00; border-color: #ff8c00; }
 
-        /* Info stock ── */
+        
         .stock-status {
             font-size: 11px; margin-top: 10px; margin-bottom: 24px;
             display: flex; align-items: center; gap: 6px;
@@ -387,7 +383,7 @@ try {
         .stock-dot.orange { background: #f39c12; }
         .stock-dot.red    { background: var(--rouge); }
 
-        /* ── Boutons action ── */
+        
         .actions-wrap { display: flex; gap: 12px; margin-bottom: 20px; }
         .btn-add-cart {
             flex: 1; height: 56px;
@@ -421,7 +417,7 @@ try {
         .btn-wishlist-detail.active { border-color: var(--rouge); background: #fff5f5; }
         .btn-wishlist-detail.active i { color: var(--rouge); font-weight: 900; }
 
-        /* ── Livraison info ── */
+        
         .livraison-info {
             background: var(--gris); border-radius: 12px;
             padding: 16px 20px; margin-bottom: 24px;
@@ -433,7 +429,7 @@ try {
         }
         .livraison-item i { font-size: 15px; color: var(--noir); width: 18px; text-align: center; }
 
-        /* ── Accordéon description ── */
+        
         .accord-item {
             border-top: 1px solid var(--gris-mid);
         }
@@ -459,7 +455,7 @@ try {
             font-size: 1.05rem; line-height: 1.8; color: #666;
         }
 
-        /* ════ PRODUITS SIMILAIRES ════ */
+        
         .similaires-section {
             padding: 50px 0 60px;
             background: #0a0a0a;
@@ -520,14 +516,14 @@ try {
         .sim-card-name { font-weight: 700; font-size: 0.9rem; color: var(--noir); margin-bottom: 4px; }
         .sim-card-price { font-weight: 800; font-size: 0.95rem; color: var(--noir); }
 
-        /* ════ ANIMATION ENTRÉE ════ */
+        
         .fade-in-up {
             opacity: 0; transform: translateY(30px);
             animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* ════ ZOOM OVERLAY ════ */
+        
         .zoom-overlay {
             display: none; position: fixed; inset: 0;
             background: rgba(0,0,0,0.92); z-index: 9999;
@@ -545,7 +541,7 @@ try {
             font-size: 28px; cursor: pointer; z-index: 10000;
         }
 
-        /* Responsive */
+        
         @media (max-width: 991px) {
             .product-details { padding-left: 0; padding-top: 24px; }
             .gallery-wrap { position: static; }
@@ -565,39 +561,45 @@ try {
 
 <?php $base = '../'; include __DIR__ . '/../includes/navbar.php'; ?>
 
-<!-- ════ ZOOM OVERLAY ════ -->
+
 <div class="zoom-overlay" id="zoomOverlay" onclick="closeZoom()">
     <button class="zoom-close" onclick="closeZoom()"><i class="fas fa-times"></i></button>
     <img src="" id="zoomImg" alt="">
 </div>
 
-<!-- ════ BREADCRUMB ════ -->
+
 <div class="breadcrumb-velvet">
     <div class="container">
-        <a href="index.php">Accueil</a>
+        <a href="../index.php">Accueil</a>
         <i class="fa fa-chevron-right"></i>
         <?php if (!empty($produit['NOM_CATEGORIE'])): ?>
-            <a href="index.php"><?= htmlspecialchars($produit['NOM_CATEGORIE']) ?></a>
+            <?php
+            $catLower = strtolower($produit['NOM_CATEGORIE']);
+            $catHref = 'nouvelles-arrivees.php';
+            if (strpos($catLower, 'femme') !== false) $catHref = 'collection-femme.php';
+            elseif (strpos($catLower, 'homme') !== false) $catHref = 'collection-homme.php';
+            ?>
+            <a href="<?= $catHref ?>"><?= htmlspecialchars($produit['NOM_CATEGORIE']) ?></a>
             <i class="fa fa-chevron-right"></i>
         <?php endif; ?>
         <?php if (!empty($produit['NOM_SOUS_CATEGORIE'])): ?>
-            <a href="index.php"><?= htmlspecialchars($produit['NOM_SOUS_CATEGORIE']) ?></a>
+            <a href="sous-categorie.php?id=<?= $produit['ID_SOUS_CATEGORIE'] ?>"><?= htmlspecialchars($produit['NOM_SOUS_CATEGORIE']) ?></a>
             <i class="fa fa-chevron-right"></i>
         <?php endif; ?>
         <span><?= htmlspecialchars($produit['NOM_PRODUIT']) ?></span>
     </div>
 </div>
 
-<!-- ════ SECTION PRINCIPALE ════ -->
+
 <section class="detail-section">
     <div class="container">
         <div class="row">
 
-            <!-- ── GALERIE ── -->
+            
             <div class="col-lg-6 fade-in-up" style="animation-delay:0.1s">
                 <div class="gallery-wrap">
 
-                    <!-- Photo principale -->
+                    
                     <div class="main-photo" onclick="openZoom(this.querySelector('img').src)">
                         <img src="<?= htmlspecialchars($images[0]) ?>"
                              id="mainPhoto"
@@ -616,7 +618,7 @@ try {
                         </div>
                     </div>
 
-                    <!-- Thumbnails -->
+                    
                     <?php if (count($images) > 1): ?>
                     <div class="thumbs-wrap">
                         <?php foreach ($images as $idx => $img): ?>
@@ -633,19 +635,19 @@ try {
                 </div>
             </div>
 
-            <!-- ── INFOS ── -->
+            
             <div class="col-lg-6 fade-in-up" style="animation-delay:0.25s">
                 <div class="product-details">
 
-                    <!-- Catégorie -->
+                    
                     <div class="detail-category">
                         <?= htmlspecialchars($produit['NOM_SOUS_CATEGORIE'] ?? 'Collection') ?>
                     </div>
 
-                    <!-- Nom -->
+                    
                     <h1 class="detail-title"><?= htmlspecialchars($produit['NOM_PRODUIT']) ?></h1>
 
-                    <!-- Prix -->
+                    
                     <div class="detail-price-wrap">
                         <div class="detail-price <?= $en_promo ? 'promo' : '' ?>">
                             <?= number_format($prix_final, 0, ',', '') ?> DH
@@ -660,14 +662,14 @@ try {
 
                     <div class="divider"></div>
 
-                    <!-- Description -->
+                    
                     <?php if (!empty($produit['DESCRIPTION']) && $produit['DESCRIPTION'] !== 'N'): ?>
                     <p class="detail-description">
                         <?= htmlspecialchars($produit['DESCRIPTION']) ?>
                     </p>
                     <?php endif; ?>
 
-                    <!-- Couleurs -->
+                    
                     <?php if (!empty($couleurs)): ?>
                     <div class="mb-4">
                         <div class="section-label">Couleur disponible</div>
@@ -700,7 +702,7 @@ try {
                     </div>
                     <?php endif; ?>
 
-                    <!-- Tailles -->
+                    
                     <?php if (!empty($tailles_dispo)): ?>
                     <div class="mb-0">
                         <div class="tailles-header">
@@ -735,7 +737,7 @@ try {
                             <?php endforeach; ?>
                         </div>
 
-                        <!-- Stock status -->
+                        
                         <div class="stock-status" id="stockStatus">
                             <?php if ($stock_total <= 0): ?>
                                 <div class="stock-dot red"></div>
@@ -757,21 +759,21 @@ try {
                     </div>
                     <?php endif; ?>
 
-                    <!-- Boutons action -->
+                    
                     <div class="actions-wrap">
-                        <button class="btn-add-cart" onclick="addToCart()">
+                        <button class="btn-add-cart" id="btnAddCart">
                             <i class="fas fa-shopping-bag"></i>
                             Ajouter au Panier
                         </button>
                         <button class="btn-wishlist-detail <?= $isFavori ? 'active' : '' ?>"
                                 id="wishlistBtn"
-                                onclick="toggleWishlist(this)"
+                                data-toggle-fav="<?= $id ?>"
                                 title="<?= $isFavori ? 'Retirer des favoris' : 'Ajouter aux favoris' ?>">
                             <i class="<?= $isFavori ? 'fas' : 'far' ?> fa-heart"></i>
                         </button>
                     </div>
 
-                    <!-- Livraison -->
+                    
                     <div class="livraison-info">
                         <div class="livraison-item">
                             <i class="fas fa-shipping-fast"></i>
@@ -790,11 +792,8 @@ try {
 </section>
 
 
-
-
-<!-- ═══ SECTION AVIS ═══ -->
 <?php
-// Rating breakdown
+
 $ratingCounts = [5=>0, 4=>0, 3=>0, 2=>0, 1=>0];
 foreach ($avisListe as $av) {
     $n = (int)$av['NOTE'];
@@ -812,7 +811,7 @@ $totalAvis = count($avisListe);
         </div>
 
         <div class="avis-top-row">
-            <!-- Left: score summary -->
+            
             <div class="avis-summary">
                 <?php if ($totalAvis > 0): ?>
                 <div class="avis-big-score"><?= $moyenneNote ?></div>
@@ -822,7 +821,7 @@ $totalAvis = count($avisListe);
                     <?php endfor; ?>
                 </div>
                 <p class="avis-summary-count"><?= $totalAvis ?> avis vérifiés</p>
-                <!-- Rating bars -->
+                
                 <div class="avis-bars">
                     <?php for ($r=5; $r>=1; $r--):
                         $pct = $totalAvis > 0 ? round($ratingCounts[$r] / $totalAvis * 100) : 0;
@@ -840,7 +839,7 @@ $totalAvis = count($avisListe);
                 <?php endif; ?>
             </div>
 
-            <!-- Right: form -->
+            
             <div class="avis-form-section">
                 <?php if ($avisMsg): ?>
                 <div class="avis-alert <?= $avisMsgType ?>"><?= htmlspecialchars($avisMsg) ?></div>
@@ -848,16 +847,15 @@ $totalAvis = count($avisListe);
 
                 <?php if (isset($_SESSION['client_id'])): ?>
                 <p class="avis-form-title">Partagez votre expérience</p>
-                <form method="POST" class="avis-compact-form">
-                    <input type="hidden" name="soumettre_avis" value="1">
+                <form class="avis-compact-form" id="avisForm" onsubmit="return false;">
                     <input type="hidden" name="note" id="noteVal" value="0">
                     <div class="avis-star-input" id="starInput">
                         <?php for ($s=5;$s>=1;$s--): ?>
                         <label data-val="<?= $s ?>"><i class="far fa-star"></i></label>
                         <?php endfor; ?>
                     </div>
-                    <input type="text" name="commentaire" class="avis-field" placeholder="Votre avis..." required maxlength="200">
-                    <button type="submit" class="avis-submit"><i class="fas fa-paper-plane"></i></button>
+                    <input type="text" name="commentaire" id="avisComment" class="avis-field" placeholder="Votre avis..." maxlength="200">
+                    <button type="button" class="avis-submit" id="avisSubmitBtn"><i class="fas fa-paper-plane"></i></button>
                 </form>
                 <?php else: ?>
                 <p class="avis-form-title">Vous avez acheté ce produit ?</p>
@@ -868,7 +866,7 @@ $totalAvis = count($avisListe);
             </div>
         </div>
 
-        <!-- Reviews list -->
+        
         <div class="avis-liste">
             <?php if (empty($avisListe)): ?>
             <div class="avis-empty">
@@ -901,14 +899,14 @@ $totalAvis = count($avisListe);
 </section>
 
 <style>
-/* ═══ AVIS SECTION ═══ */
+
 .avis-section {
     padding: 60px 0 70px;
     background: #faf9f7;
     border-top: 1px solid #eee;
 }
 
-/* Header */
+
 .avis-header {
     display: flex;
     align-items: center;
@@ -927,7 +925,7 @@ $totalAvis = count($avisListe);
 }
 .avis-header-title em { font-style: italic; color: #888; }
 
-/* Top row: summary + form */
+
 .avis-top-row {
     display: grid;
     grid-template-columns: 280px 1fr;
@@ -936,7 +934,7 @@ $totalAvis = count($avisListe);
     align-items: start;
 }
 
-/* Summary card */
+
 .avis-summary {
     background: #fff;
     border-radius: 16px;
@@ -962,7 +960,7 @@ $totalAvis = count($avisListe);
     margin-bottom: 20px;
 }
 
-/* Rating bars */
+
 .avis-bars { display: flex; flex-direction: column; gap: 6px; }
 .avis-bar-row { display: flex; align-items: center; gap: 8px; }
 .avis-bar-label {
@@ -980,7 +978,7 @@ $totalAvis = count($avisListe);
 }
 .avis-bar-pct { font-size: 11px; color: #bbb; width: 20px; }
 
-/* ── Form section ── */
+
 .avis-form-section {
     display: flex;
     flex-direction: column;
@@ -1006,7 +1004,7 @@ $totalAvis = count($avisListe);
 }
 .avis-compact-form:focus-within { border-color: #bbb; }
 
-/* ── Star input ── */
+
 .avis-star-input {
     display: flex;
     flex-direction: row-reverse;
@@ -1032,7 +1030,7 @@ $totalAvis = count($avisListe);
 .avis-star-input label.active i { color: #f5a623; }
 .avis-star-input label.active ~ label i { color: #f5a623; }
 
-/* ── Input field ── */
+
 .avis-field {
     flex: 1;
     min-width: 0;
@@ -1046,7 +1044,7 @@ $totalAvis = count($avisListe);
 }
 .avis-field::placeholder { color: #bbb; }
 
-/* ── Submit button ── */
+
 .avis-submit {
     width: 36px; height: 36px;
     background: #000;
@@ -1063,7 +1061,7 @@ $totalAvis = count($avisListe);
 }
 .avis-submit:hover { background: #333; transform: scale(1.06); }
 
-/* ── Login link ── */
+
 .avis-login-link {
     display: inline-flex;
     align-items: center;
@@ -1089,7 +1087,7 @@ $totalAvis = count($avisListe);
 .avis-alert.success { background: #e8f5e9; color: #2e7d32; }
 .avis-alert.error   { background: #fce4ec; color: #c62828; }
 
-/* ── Reviews list ── */
+
 .avis-liste {
     display: flex;
     flex-direction: column;
@@ -1152,14 +1150,14 @@ $totalAvis = count($avisListe);
 </style>
 
 <script>
-// ── Star rating: hover + click ──
+
 (function() {
     const labels = document.querySelectorAll('.avis-star-input label');
     const hidden  = document.getElementById('noteVal');
     if (!labels.length || !hidden) return;
     let selected = 0;
 
-    // Hover: preview stars
+    
     labels.forEach(lbl => {
         lbl.addEventListener('mouseenter', () => {
             const val = parseInt(lbl.dataset.val);
@@ -1175,7 +1173,7 @@ $totalAvis = count($avisListe);
         });
     });
 
-    // Mouse leave: restore to selected
+    
     const container = document.getElementById('starInput');
     if (container) {
         container.addEventListener('mouseleave', () => {
@@ -1192,7 +1190,7 @@ $totalAvis = count($avisListe);
         });
     }
 
-    // Click: lock selection
+    
     labels.forEach(lbl => {
         lbl.addEventListener('click', () => {
             selected = parseInt(lbl.dataset.val);
@@ -1209,10 +1207,58 @@ $totalAvis = count($avisListe);
             });
         });
     });
+
+    var submitBtn = document.getElementById('avisSubmitBtn');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function() {
+            var note = parseInt(hidden.value);
+            var comment = document.getElementById('avisComment');
+            var text = comment ? comment.value.trim() : '';
+            if (!note || note < 1) { showToast('Veuillez choisir une note.', 'warning'); return; }
+            if (!text) { showToast('Veuillez écrire un commentaire.', 'warning'); return; }
+            submitBtn.disabled = true;
+            var fd = new FormData();
+            fd.append('action', 'add_avis');
+            fd.append('id_produit', <?= $id ?>);
+            fd.append('note', note);
+            fd.append('commentaire', text);
+            fetch('actions.php', { method: 'POST', body: fd })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    submitBtn.disabled = false;
+                    if (res.success) {
+                        showToast(res.message, 'success');
+                        comment.value = '';
+                        selected = 0;
+                        hidden.value = 0;
+                        labels.forEach(function(l) { l.classList.remove('active'); l.querySelector('i').classList.replace('fas','far'); });
+                        var av = res.avis;
+                        var initial = av.auteur ? av.auteur.charAt(0).toUpperCase() : '?';
+                        var starsHtml = '';
+                        for (var i = 1; i <= 5; i++) starsHtml += '<i class="' + (i <= av.note ? 'fas' : 'far') + ' fa-star"></i>';
+                        var html = '<div class="avis-card" style="animation-delay:0s">'
+                            + '<div class="avis-card-header">'
+                            + '<div class="avis-avatar">' + initial + '</div>'
+                            + '<div class="avis-card-info"><strong>' + av.auteur + '</strong><div class="avis-card-stars">' + starsHtml + '</div></div>'
+                            + '<span class="avis-card-date">' + av.date + '</span>'
+                            + '</div>'
+                            + '<p class="avis-card-text">' + av.commentaire + '</p>'
+                            + '</div>';
+                        var liste = document.querySelector('.avis-liste');
+                        var empty = liste.querySelector('.avis-empty');
+                        if (empty) empty.remove();
+                        liste.insertAdjacentHTML('afterbegin', html);
+                    } else {
+                        showToast(res.message || 'Erreur.', 'error');
+                    }
+                })
+                .catch(function() { submitBtn.disabled = false; showToast('Erreur de connexion.', 'error'); });
+        });
+    }
 })();
 </script>
 
-<!-- ════ PRODUITS SIMILAIRES ════ -->
+
 <?php if (!empty($similaires)): ?>
 <section class="similaires-section">
     <div class="container">
@@ -1269,14 +1315,14 @@ $totalAvis = count($avisListe);
 
 <script src="../JS/Main.js"></script>
 <script>
-// ── Changer photo principale ──
+
 function changePhoto(src, thumb) {
     document.getElementById('mainPhoto').src = src;
     document.querySelectorAll('.thumb').forEach(t => t.classList.remove('active'));
     thumb.classList.add('active');
 }
 
-// ── Zoom photo ──
+
 function openZoom(src) {
     document.getElementById('zoomImg').src = src;
     document.getElementById('zoomOverlay').classList.add('open');
@@ -1288,9 +1334,9 @@ function closeZoom() {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeZoom(); });
 
-// ── Sélection taille ──
+
 let tailleSelectionnee = null;
-// Set from first active button OR allow without size if no sizes exist
+
 document.querySelectorAll('.taille-btn:not(.epuise)').forEach(btn => {
     if (btn.classList.contains('active')) tailleSelectionnee = btn.dataset.taille;
 });
@@ -1311,192 +1357,17 @@ function selectTaille(btn) {
     }
 }
 
-// ── Sélection couleur ──
+
 function selectCouleur(dot) {
     document.querySelectorAll('.couleur-dot').forEach(d => d.classList.remove('active'));
     dot.classList.add('active');
 }
 
-// ── Toggle favoris (AJAX) → actions.php unifié ──
-function toggleWishlist(btn) {
-    const produitId = <?= $id ?>;
-    const data = new FormData();
-    data.append('action', 'toggle_fav');
-    data.append('id_produit', produitId);
 
-    fetch('actions.php', { method: 'POST', body: data })
-        .then(r => r.json())
-        .then(res => {
-            if (res.requireLogin) {
-                showToast('⚠ Connectez-vous pour ajouter aux favoris.', 'warning');
-                return;
-            }
-            if (res.success) {
-                if (res.added) {
-                    btn.classList.add('active');
-                    btn.querySelector('i')?.classList.replace('far', 'fas');
-                    showToast('❤ Ajouté aux favoris !', 'success');
-                } else {
-                    btn.classList.remove('active');
-                    btn.querySelector('i')?.classList.replace('fas', 'far');
-                    showToast('Retiré des favoris.', 'info');
-                }
-            } else {
-                showToast('✗ Erreur, réessayez.', 'error');
-            }
-        })
-        .catch(() => showToast('✗ Erreur de connexion.', 'error'));
-}
-
-// ── Ajouter au panier (AJAX) → actions.php unifié ──
-function addToCart() {
-    if (hasSizes && !tailleSelectionnee) {
-        const tw = document.querySelector('.tailles-wrap');
-        if (tw) { tw.style.animation = 'shake 0.4s ease'; setTimeout(() => tw.style.animation = '', 500); }
-        showToast('⚠ Veuillez sélectionner une taille.', 'warning');
-        return;
-    }
-
-    const btn      = document.querySelector('.btn-add-cart');
-    const original = btn.innerHTML;
-    btn.disabled   = true;
-    btn.innerHTML  = '<i class="fas fa-spinner fa-spin"></i> Ajout en cours...';
-
-    const formData = new FormData();
-    formData.append('action', 'add_to_cart');
-    formData.append('id_produit', <?= $id ?>);
-    formData.append('qte', 1);
-
-    fetch('actions.php', { method: 'POST', body: formData })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                btn.innerHTML        = '<i class="fas fa-check"></i> Ajouté !';
-                btn.style.background = '#2ecc71';
-                updateNavBadge(data.panier_count);
-                showToast('✓ Produit ajouté au panier !', 'success');
-                setTimeout(() => {
-                    btn.innerHTML        = original;
-                    btn.style.background = '';
-                    btn.disabled         = false;
-                }, 2500);
-            } else {
-                btn.innerHTML = original; btn.disabled = false;
-                showToast('✗ ' + (data.message || 'Erreur.'), 'error');
-            }
-        })
-        .catch(() => {
-            btn.innerHTML = original; btn.disabled = false;
-            showToast('✗ Erreur de connexion.', 'error');
-        });
-}
-
-// ── Mettre à jour le badge panier dans la navbar ──
-function updateNavBadge(count) {
-    let badge = document.getElementById('nav-cart-badge');
-    if (!badge) {
-        // Créer le badge s'il n'existe pas encore
-        const cartLink = document.querySelector('.fa-shopping-bag')?.closest('a');
-        if (!cartLink) return;
-        cartLink.style.position = 'relative';
-        badge = document.createElement('span');
-        badge.id = 'nav-cart-badge';
-        badge.style.cssText = `
-            position:absolute; top:-8px; right:-8px;
-            background:#e63946; color:#fff;
-            border-radius:50%; min-width:18px; height:18px;
-            font-size:10px; font-weight:700;
-            display:flex; align-items:center; justify-content:center;
-            padding:0 3px; pointer-events:none;
-            font-family:'Inter',sans-serif;
-            box-shadow: 0 2px 6px rgba(230,57,70,0.5);
-            animation: badgePop 0.3s cubic-bezier(0.4,0,0.2,1);
-        `;
-        cartLink.appendChild(badge);
-        // Animation style
-        const s = document.createElement('style');
-        s.textContent = `@keyframes badgePop { 0%{transform:scale(0)} 70%{transform:scale(1.2)} 100%{transform:scale(1)} }`;
-        document.head.appendChild(s);
-    }
-    if (count > 0) {
-        badge.textContent  = count;
-        badge.style.display = 'flex';
-        // Re-trigger animation
-        badge.style.animation = 'none';
-        badge.offsetHeight;
-        badge.style.animation = 'badgePop 0.3s cubic-bezier(0.4,0,0.2,1)';
-    } else {
-        badge.style.display = 'none';
-    }
-}
-
-// ── Mini popup "Produit ajouté" avec image ──
-function showCartPopup(data) {
-    let popup = document.getElementById('cart-popup');
-    if (!popup) {
-        popup = document.createElement('div');
-        popup.id = 'cart-popup';
-        popup.style.cssText = `
-            position:fixed; top:90px; right:20px; z-index:9998;
-            background:#fff; border-radius:14px;
-            box-shadow:0 8px 40px rgba(0,0,0,0.15);
-            padding:16px; display:flex; align-items:center; gap:14px;
-            max-width:320px; width:calc(100vw - 40px);
-            transform:translateX(120%); transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);
-            border-left:4px solid #2ecc71;
-            font-family:'Inter',sans-serif;
-        `;
-        document.body.appendChild(popup);
-    }
-
-    const imgHtml = data.image
-        ? `<img src="${data.image}" style="width:60px;height:74px;object-fit:cover;border-radius:8px;flex-shrink:0;" onerror="this.style.display='none'">`
-        : `<div style="width:60px;height:74px;background:#f4f4f4;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-shirt" style="color:#ccc;font-size:1.5rem;"></i></div>`;
-
-    popup.innerHTML = `
-        ${imgHtml}
-        <div style="flex:1;min-width:0;">
-            <div style="font-size:10px;color:#2ecc71;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px;">
-                <i class="fas fa-check-circle"></i> Ajouté au panier
-            </div>
-            <div style="font-size:13px;font-weight:600;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;">
-                ${data.nom || ''}
-            </div>
-            <div style="font-size:14px;font-weight:800;color:#111;">${data.prix || ''} DH</div>
-        </div>
-        <a href="client/panier.php" style="
-            background:#000;color:#fff;text-decoration:none;
-            font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
-            padding:8px 12px;border-radius:8px;white-space:nowrap;flex-shrink:0;
-        ">Voir panier</a>
-    `;
-
-    // Afficher
-    clearTimeout(popup._t);
-    setTimeout(() => popup.style.transform = 'translateX(0)', 10);
-
-    // Fermer après 4 secondes
-    popup._t = setTimeout(() => {
-        popup.style.transform = 'translateX(120%)';
-    }, 4000);
-}
-
-// ── Toast notification ──
-/* showToast — 7 secondes */
-function showToast(msg, type = 'success') {
-    const toast = document.getElementById('toast');
-    if (!toast) return;
-    toast.textContent = msg;
-    toast.className = 'toast-msg ' + type + ' show';
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => { toast.className = 'toast-msg'; }, 7000);
-}
-
-// ── Accordéon ──
 function toggleAccord(header) {
     const body = header.nextElementSibling;
     const isOpen = body.classList.contains('open');
-    // Fermer tous
+    
     document.querySelectorAll('.accord-body').forEach(b => b.classList.remove('open'));
     document.querySelectorAll('.accord-header').forEach(h => h.classList.remove('open'));
     if (!isOpen) {
@@ -1505,7 +1376,7 @@ function toggleAccord(header) {
     }
 }
 
-// ── Animation shake (tailles non sélectionnées) ──
+
 const shakeStyle = document.createElement('style');
 shakeStyle.textContent = `
     @keyframes shake {
@@ -1518,103 +1389,61 @@ shakeStyle.textContent = `
 `;
 document.head.appendChild(shakeStyle);
 
-// ── Ouvrir description par défaut ──
+
 document.querySelector('.accord-header')?.click();
 </script>
 
 <div id="toast" class="toast-msg"></div>
 <script src="../JS/script.js"></script>
 <script>
-// ── Override addToCart for product detail page (script.js defines a generic one) ──
 (function() {
     const prodId = <?= $id ?>;
     const hasSz = document.querySelectorAll('.taille-btn').length > 0;
 
-    // Override the add-to-cart button behavior
-    const cartBtn = document.querySelector('.btn-add-cart');
+    var cartBtn = document.getElementById('btnAddCart');
     if (cartBtn) {
-        cartBtn.onclick = function(e) {
+        cartBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            // Check size selection
-            const selected = document.querySelector('.taille-btn.active:not(.epuise)');
+            e.stopPropagation();
+            var selected = document.querySelector('.taille-btn.active:not(.epuise)');
             if (hasSz && !selected) {
-                const tw = document.querySelector('.tailles-wrap');
-                if (tw) { tw.style.animation = 'shake 0.4s ease'; setTimeout(() => tw.style.animation = '', 500); }
+                var tw = document.querySelector('.tailles-wrap');
+                if (tw) { tw.style.animation = 'shake 0.4s ease'; setTimeout(function(){ tw.style.animation = ''; }, 500); }
                 showToast('Veuillez sélectionner une taille.', 'warning');
                 return;
             }
-
-            const original = cartBtn.innerHTML;
+            var original = cartBtn.innerHTML;
             cartBtn.disabled = true;
             cartBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ajout en cours...';
 
-            const data = new FormData();
+            var data = new FormData();
             data.append('action', 'add_to_cart');
             data.append('id_produit', prodId);
             data.append('qte', 1);
 
             fetch('actions.php', { method: 'POST', body: data })
-                .then(r => r.json())
-                .then(res => {
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
                     if (res.success) {
                         cartBtn.innerHTML = '<i class="fas fa-check"></i> Ajouté !';
                         cartBtn.style.background = '#2ecc71';
-                        // Update nav badge
-                        const badges = document.querySelectorAll('.panier-nav-badge');
+                        var badges = document.querySelectorAll('.panier-nav-badge');
                         if (res.panier_count > 0) {
-                            badges.forEach(b => { b.textContent = res.panier_count; b.style.display = 'flex'; });
+                            badges.forEach(function(b) { b.textContent = res.panier_count; b.style.display = 'flex'; });
+                            if (!badges.length) {
+                                var wrap = document.querySelector('.nav-panier-wrap');
+                                if (wrap) { var b = document.createElement('span'); b.className = 'panier-nav-badge'; b.textContent = res.panier_count; wrap.appendChild(b); }
+                            }
                         }
                         showToast('Produit ajouté au panier !', 'success');
-                        setTimeout(() => {
-                            cartBtn.innerHTML = original;
-                            cartBtn.style.background = '';
-                            cartBtn.disabled = false;
-                        }, 2500);
+                        setTimeout(function() { cartBtn.innerHTML = original; cartBtn.style.background = ''; cartBtn.disabled = false; }, 2500);
                     } else {
                         cartBtn.innerHTML = original; cartBtn.disabled = false;
                         showToast(res.message || 'Erreur.', 'error');
                     }
                 })
-                .catch(() => {
-                    cartBtn.innerHTML = original; cartBtn.disabled = false;
-                    showToast('Erreur de connexion.', 'error');
-                });
-        };
-    }
-
-    // Override the wishlist button behavior
-    const wishBtn = document.getElementById('wishlistBtn');
-    if (wishBtn) {
-        wishBtn.onclick = function(e) {
-            e.preventDefault();
-            const data = new FormData();
-            data.append('action', 'toggle_fav');
-            data.append('id_produit', prodId);
-
-            fetch('actions.php', { method: 'POST', body: data })
-                .then(r => r.json())
-                .then(res => {
-                    if (res.requireLogin) {
-                        showToast('Connectez-vous pour ajouter aux favoris.', 'warning');
-                        return;
-                    }
-                    if (res.success) {
-                        const icon = wishBtn.querySelector('i');
-                        if (res.added) {
-                            wishBtn.classList.add('active');
-                            if (icon) icon.className = 'fas fa-heart';
-                            showToast('Ajouté aux favoris !', 'success');
-                        } else {
-                            wishBtn.classList.remove('active');
-                            if (icon) icon.className = 'far fa-heart';
-                            showToast('Retiré des favoris.', 'info');
-                        }
-                    } else {
-                        showToast('Erreur, réessayez.', 'error');
-                    }
-                })
-                .catch(() => showToast('Erreur de connexion.', 'error'));
-        };
+                .catch(function() { cartBtn.innerHTML = original; cartBtn.disabled = false; showToast('Erreur de connexion.', 'error'); });
+        });
     }
 })();
 </script>

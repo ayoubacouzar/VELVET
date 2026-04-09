@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Already logged in → redirect to right page
+
 if (isset($_SESSION['client_id']))  { header('Location: client/index.php');   exit; }
 if (isset($_SESSION['admin_id']))   { header('Location: admin/index.php');    exit; }
 if (isset($_SESSION['livreur_id'])) { header('Location: livreur/index.php'); exit; }
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email) || empty($password)) {
         $erreur = "Veuillez remplir tous les champs.";
     } else {
-        // 1. Check CLIENT
+        
         $stmt = $pdo->prepare("SELECT * FROM client WHERE EMAIL_CLIENT = ?");
         $stmt->execute([$email]);
         $client = $stmt->fetch();
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: client/index.php');
             exit;
         }
-        // 2. Check ADMIN
+        
         $stmt = $pdo->prepare("SELECT * FROM administrateur WHERE EMAIL_ADMIN = ?");
         $stmt->execute([$email]);
         $admin = $stmt->fetch();
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: admin/index.php');
             exit;
         }
-        // 3. Check LIVREUR
+        
         $stmt = $pdo->prepare("SELECT * FROM livreur WHERE EMAIL_LIVREUR = ?");
         $stmt->execute([$email]);
         $livreur = $stmt->fetch();
@@ -59,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$base = ''; // root level
+$base = ''; 
 ?>
 <!DOCTYPE html>
 <html lang="fr">

@@ -1,5 +1,4 @@
 <?php
-// ─── actions.php — Gestion AJAX ──────────────────────────────────────────
 session_start();
 require_once __DIR__ . '/../db.php';
 
@@ -7,8 +6,6 @@ header('Content-Type: application/json');
 
 $action   = $_POST['action'] ?? $_GET['action'] ?? '';
 $clientId = $_SESSION['client_id'] ?? null;
-
-// Actions nécessitant connexion (sauf panier qui marche pour invités)
 $requiresLogin = ['toggle_fav', 'remove_favorite', 'update_profile', 'change_password', 'get_order_details'];
 
 if (in_array($action, $requiresLogin) && !$clientId) {
@@ -17,7 +14,6 @@ if (in_array($action, $requiresLogin) && !$clientId) {
 }
 
 switch ($action) {
-
     case 'toggle_fav':
         $produitId = intval($_POST['id_produit'] ?? $_POST['produit_id'] ?? 0);
         if (!$produitId) { echo json_encode(['success' => false, 'message' => 'Produit introuvable.']); exit; }
@@ -41,18 +37,29 @@ switch ($action) {
             $_SESSION['panier_id'] = $pdo->lastInsertId();
         }
         $panierId = $_SESSION['panier_id'];
-        $modele = $pdo->prepare("SELECT ID_MODELE, QUANTITE FROM modele_produit WHERE ID_PRODUIT=? AND QUANTITE>0 ORDER BY ID_MODELE LIMIT 1");
-        $modele->execute([$produitId]);
-        $modele = $modele->fetch(PDO::FETCH_ASSOC);
-        if (!$modele) {
+        $stockStmt = $pdo->prepare("SELECT COALESCE(SUM(QUANTITE),0) FROM modele_produit WHERE ID_PRODUIT=?");
+        $stockStmt->execute([$produitId]);
+        $stockTotal = (int)$stockStmt->fetchColumn();
+        if ($stockTotal <= 0) {
             echo json_encode(['success' => false, 'message' => 'Ce produit est en rupture de stock.']);
             exit;
         }
         $exist = $pdo->prepare("SELECT QUANTITE FROM inclure WHERE ID_PANIER=? AND ID_PRODUIT=?");
         $exist->execute([$panierId, $produitId]);
         $existRow = $exist->fetch();
+        $currentQty = $existRow ? (int)$existRow['QUANTITE'] : 0;
+        $newQty = $currentQty + $qte;
+        if ($newQty > $stockTotal) {
+            $remaining = $stockTotal - $currentQty;
+            if ($remaining <= 0) {
+                echo json_encode(['success' => false, 'message' => 'Vous avez déjà le maximum en stock ('.$stockTotal.') dans votre panier.']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Stock insuffisant. Il ne reste que '.$remaining.' article(s) disponible(s).']);
+            }
+            exit;
+        }
         if ($existRow) {
-            $pdo->prepare("UPDATE inclure SET QUANTITE=QUANTITE+? WHERE ID_PANIER=? AND ID_PRODUIT=?")->execute([$qte, $panierId, $produitId]);
+            $pdo->prepare("UPDATE inclure SET QUANTITE=? WHERE ID_PANIER=? AND ID_PRODUIT=?")->execute([$newQty, $panierId, $produitId]);
         } else {
             $pdo->prepare("INSERT INTO inclure (ID_PANIER,ID_PRODUIT,QUANTITE) VALUES(?,?,?)")->execute([$panierId, $produitId, $qte]);
         }
@@ -70,7 +77,6 @@ switch ($action) {
         $total = $pdo->prepare("SELECT COALESCE(SUM(QUANTITE),0) FROM inclure WHERE ID_PANIER=?");
         $total->execute([$panierId]);
         $panierCount = (int)$total->fetchColumn();
-        // Recalcul montant
         $stmt = $pdo->prepare("SELECT i.QUANTITE, p.PRIX, p.EN_PROMO, p.PRIX_PROMO FROM inclure i JOIN produit p ON i.ID_PRODUIT=p.ID_PRODUIT WHERE i.ID_PANIER=?");
         $stmt->execute([$panierId]);
         $rows = $stmt->fetchAll();
@@ -88,6 +94,13 @@ switch ($action) {
         if ($qte <= 0) {
             $pdo->prepare("DELETE FROM inclure WHERE ID_PANIER=? AND ID_PRODUIT=?")->execute([$panierId, $produitId]);
         } else {
+            $stockStmt = $pdo->prepare("SELECT COALESCE(SUM(QUANTITE),0) FROM modele_produit WHERE ID_PRODUIT=?");
+            $stockStmt->execute([$produitId]);
+            $stockTotal = (int)$stockStmt->fetchColumn();
+            if ($qte > $stockTotal) {
+                echo json_encode(['success' => false, 'message' => 'Stock insuffisant. Il ne reste que '.$stockTotal.' article(s) disponible(s).', 'stock_max' => $stockTotal]);
+                exit;
+            }
             $pdo->prepare("UPDATE inclure SET QUANTITE=? WHERE ID_PANIER=? AND ID_PRODUIT=?")->execute([$qte, $panierId, $produitId]);
         }
         $stmt = $pdo->prepare("SELECT i.QUANTITE, p.PRIX, p.EN_PROMO, p.PRIX_PROMO FROM inclure i JOIN produit p ON i.ID_PRODUIT=p.ID_PRODUIT WHERE i.ID_PANIER=?");
@@ -139,6 +152,29 @@ switch ($action) {
         $s=$pdo->prepare("SELECT ct.QUANTITE,ct.PRIX,m.TAILLE,m.COULEUR,p.NOM_PRODUIT,p.IMAGE1,p.IMAGE2 FROM contient ct JOIN modele_produit m ON ct.ID_MODELE=m.ID_MODELE JOIN produit p ON m.ID_PRODUIT=p.ID_PRODUIT WHERE ct.ID_COMMANDE=?");
         $s->execute([$commandeId]);
         echo json_encode(['success'=>true,'commande'=>$commande,'articles'=>$s->fetchAll()]);
+        break;
+
+    case 'add_avis':
+        if (!$clientId) { echo json_encode(['success' => false, 'requireLogin' => true]); exit; }
+        $produitId = intval($_POST['id_produit'] ?? 0);
+        $note = max(1, min(5, intval($_POST['note'] ?? 0)));
+        $commentaire = trim($_POST['commentaire'] ?? '');
+        if (!$produitId || !$note || empty($commentaire)) {
+            echo json_encode(['success' => false, 'message' => 'Veuillez remplir tous les champs et choisir une note.']);
+            exit;
+        }
+        try {
+            $stmtA = $pdo->prepare("INSERT INTO avis (ID_CLIENT, ID_PRODUIT, NOTE, COMMENTAIRE, DATE_AVIS) VALUES (?, ?, ?, ?, CURDATE())");
+            $stmtA->execute([$clientId, $produitId, $note, $commentaire]);
+            $nom = $pdo->prepare("SELECT CONCAT(PRENOM_CLIENT, ' ', LEFT(NOM_CLIENT, 1), '.') AS NOM FROM client WHERE ID_CLIENT = ?");
+            $nom->execute([$clientId]);
+            $auteur = $nom->fetchColumn() ?: 'Client';
+            echo json_encode(['success' => true, 'message' => 'Merci ! Votre avis a été publié.', 'avis' => [
+                'note' => $note, 'commentaire' => htmlspecialchars($commentaire), 'auteur' => htmlspecialchars($auteur), 'date' => date('d M Y')
+            ]]);
+        } catch (PDOException $e) {
+            echo json_encode(['success' => false, 'message' => 'Erreur lors de la soumission.']);
+        }
         break;
 
     default:

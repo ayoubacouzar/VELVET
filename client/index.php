@@ -11,7 +11,7 @@ $stmt->execute([$clientId]);
 $client = $stmt->fetch();
 if (!$client) { session_destroy(); header('Location: ../login.php'); exit; }
 
-// ── Commandes ──────────────────────────────────────────────────────────────
+
 $stmt = $pdo->prepare("
     SELECT c.ID_COMMANDE, c.DATE_COMMANDE, c.STATUT_COMMANDE, c.MONTANT_TOTAL,
            MIN(p.IMAGE1) AS IMAGE1,
@@ -27,7 +27,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$clientId]);
 $commandes = $stmt->fetchAll();
 
-// ── Panier ─────────────────────────────────────────────────────────────────
+
 $panierId    = $_SESSION['panier_id'] ?? null;
 $panierItems = [];
 if ($panierId) {
@@ -46,7 +46,7 @@ if ($panierId) {
     $panierItems = $stmt->fetchAll();
 }
 
-// ── Favoris ────────────────────────────────────────────────────────────────
+
 $stmt = $pdo->prepare("
     SELECT p.ID_PRODUIT, p.NOM_PRODUIT, p.IMAGE1, p.IMAGE2, p.IMAGE3,
            p.PRIX, p.EN_PROMO, p.PRIX_PROMO,
@@ -62,7 +62,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$clientId]);
 $favoris = $stmt->fetchAll();
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+
 function statutBadge(string $s): string {
     $map = [
         'livré'    => ['badge-delivered',  'fa-check',   'Livré'],
@@ -98,7 +98,7 @@ function prixHTML(array $p): string {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../CSS/style.css">
     <style>
-        /* ── Product cards (same as collection-homme) ── */
+        
         .prod-card {
             background: #fff;
             border-radius: 14px;
@@ -176,7 +176,7 @@ function prixHTML(array $p): string {
             letter-spacing: 0.5px;
         }
 
-        /* ── Stats diamonds ── */
+        
         .hero-stats-col {
             display: flex;
             flex-direction: column;
@@ -228,7 +228,7 @@ function prixHTML(array $p): string {
 
 <?php $base = '../'; include __DIR__ . '/../includes/navbar.php'; ?>
 
-<!-- ═══ HERO ═══ -->
+
 <section class="welcome-hero">
     <div class="hero-bg-text" aria-hidden="true">VELVET</div>
     <div class="hero-noise"   aria-hidden="true"></div>
@@ -249,16 +249,16 @@ function prixHTML(array $p): string {
                 </p>
             </div>
 
-            <!-- ── 2 stats en losange ── -->
+            
             <div class="col-lg-5 d-none d-lg-flex justify-content-end">
                 <div class="hero-stats-col fade-up d3">
-                    <!-- Commandes → clique vers #commandes -->
+                    
                     <a href="#commandes" class="hero-stat-row" onclick="smoothScroll('commandes')">
                         <span class="hsr-number"><?= count($commandes) ?></span>
                         <span class="hsr-label">Commandes</span>
                         <i class="fas fa-chevron-right hsr-icon"></i>
                     </a>
-                    <!-- Favoris -->
+                    
                     <div class="hero-stat-row" style="cursor:default;">
                         <span class="hsr-number"><?= count($favoris) ?></span>
                         <span class="hsr-label">Favoris</span>
@@ -271,7 +271,7 @@ function prixHTML(array $p): string {
     </div>
 </section>
 
-<!-- ═══ FAVORIS (1er) ═══ -->
+
 <section class="section-light py-5" id="favoris">
     <div class="container py-4">
         <div class="section-header reveal">
@@ -346,7 +346,7 @@ function prixHTML(array $p): string {
     </div>
 </section>
 
-<!-- ═══ COMMANDES (2ème) ═══ -->
+
 <section class="section-dark py-5" id="commandes">
     <div class="container py-4">
         <div class="section-header reveal">
@@ -390,7 +390,7 @@ function prixHTML(array $p): string {
     </div>
 </section>
 
-<!-- ═══ PANIER (3ème) — caché si vide ═══ -->
+
 <?php if (!empty($panierItems)): ?>
 <section class="section-light py-5" id="panier">
     <div class="container py-4">
@@ -458,7 +458,7 @@ function prixHTML(array $p): string {
 <?php include __DIR__ . '/../includes/footer.php'; ?>
 <?php include __DIR__ . '/../includes/profile_modal.php'; ?>
 
-<!-- ═══ MODAL COMMANDE ═══ -->
+
 <div class="modal-overlay" id="orderModal" onclick="closeOrderModal(event)">
     <div class="modal-box modal-box-lg">
         <div class="modal-header">

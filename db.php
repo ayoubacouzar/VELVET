@@ -1,8 +1,8 @@
 <?php
-// ─── db.php — Connexion Base de Données (fichier unique partagé) ──────────
+
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');   // ← modifier selon votre config
-define('DB_PASS', '');       // ← modifier selon votre config
+define('DB_USER', 'root');   
+define('DB_PASS', '');       
 define('DB_NAME', 'bd_velvet');
 
 try {

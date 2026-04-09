@@ -5,14 +5,14 @@ require_once __DIR__ . '/../db.php';
 
 $currentPage = basename($_SERVER['PHP_SELF']);
 
-// ── Supprimer un message ──
+
 if (isset($_GET['delete']) && is_numeric($_GET['delete'])) {
     $pdo->prepare("DELETE FROM message WHERE ID_MESSAGE = ?")->execute([(int)$_GET['delete']]);
     header('Location: messages.php?deleted=1');
     exit;
 }
 
-// ── Récupérer tous les messages ──
+
 $messages = $pdo->query("SELECT * FROM message ORDER BY DATE_MESSAGE DESC, ID_MESSAGE DESC")->fetchAll();
 $total = count($messages);
 ?>

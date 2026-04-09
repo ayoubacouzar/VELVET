@@ -1,8 +1,6 @@
-/* ═══════════════════════════════════════════════════════════
-   script.js — VELVET · JavaScript partagé (toutes pages)
-   ══════════════════════════════════════════════════════════ */
 
-/* ── Mini-bar slider ───────────────────────────────────── */
+
+
 (function () {
     const slides = document.querySelectorAll('.mini-bar-slide');
     if (!slides.length) return;
@@ -14,7 +12,7 @@
     }, 4500);
 })();
 
-/* ── Scroll reveal ─────────────────────────────────────── */
+
 (function () {
     const els = document.querySelectorAll('.reveal');
     if (!els.length) return;
@@ -30,7 +28,7 @@
     els.forEach(el => obs.observe(el));
 })();
 
-/* ── Toast notification — 7 secondes ──────────────────── */
+
 function showToast(message, type = 'success') {
     const toast = document.getElementById('toast');
     if (!toast) return;
@@ -40,7 +38,7 @@ function showToast(message, type = 'success') {
     toast._t = setTimeout(() => { toast.className = 'toast-msg'; }, 7000);
 }
 
-/* ── Footer contact form ───────────────────────────────── */
+
 function sendFooterForm() {
     const nom     = document.getElementById('f-nom')?.value.trim();
     const prenom  = document.getElementById('f-prenom')?.value.trim();
@@ -59,7 +57,7 @@ function cancelFooterForm() {
     if (s) s.style.display = 'none';
 }
 
-/* ── Auth pages: toggle password ──────────────────────── */
+
 function togglePwd(fieldId, iconId) {
     const f = document.getElementById(fieldId);
     const i = document.getElementById(iconId);
@@ -68,7 +66,7 @@ function togglePwd(fieldId, iconId) {
     i.className = f.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
 }
 
-/* ── Inscription: ville "Autre" ────────────────────────── */
+
 (function () {
     const villeSelect = document.getElementById('ville');
     if (!villeSelect) return;
@@ -81,7 +79,7 @@ function togglePwd(fieldId, iconId) {
     });
 })();
 
-/* ── Inscription: password strength ───────────────────── */
+
 (function () {
     const pwdField = document.getElementById('passwordField');
     if (!pwdField) return;
@@ -105,7 +103,7 @@ function togglePwd(fieldId, iconId) {
     });
 })();
 
-/* ── Inscription: confirm password match ──────────────── */
+
 (function () {
     const confirmField = document.getElementById('confirmField');
     if (!confirmField) return;
@@ -116,17 +114,12 @@ function togglePwd(fieldId, iconId) {
 })();
 
 
-/* ═══════════════════════════════════════════════════════════
-   PANIER & FAVORIS — AJAX buttons (toutes pages)
-   ══════════════════════════════════════════════════════════ */
-
-/* Déterminer le bon chemin vers actions.php */
 function getActionsPath() {
-    // window.VELVET_BASE est défini dans navbar.php
+    
     return (window.VELVET_BASE || '') + 'client/actions.php';
 }
 
-/* ── Ajouter au panier ─────────────────────────────────── */
+
 function addToCart(produitId, qte) {
     qte = qte || 1;
     const btn = document.querySelector(`[data-cart-id="${produitId}"]`);
@@ -142,7 +135,7 @@ function addToCart(produitId, qte) {
         .then(res => {
             if (res.success) {
                 showToast('✓ ' + res.message, 'success');
-                // Mettre à jour le badge panier
+                
                 const badges = document.querySelectorAll('.panier-nav-badge');
                 if (res.panier_count > 0) {
                     badges.forEach(b => { b.textContent = res.panier_count; b.style.display = 'flex'; });
@@ -156,7 +149,7 @@ function addToCart(produitId, qte) {
                         }
                     }
                 }
-                // Animation bouton
+                
                 if (btn) {
                     btn.classList.remove('loading');
                     btn.classList.add('added');
@@ -173,7 +166,7 @@ function addToCart(produitId, qte) {
         });
 }
 
-/* ── Toggle favori ─────────────────────────────────────── */
+
 function toggleFav(produitId, btn) {
     const data = new FormData();
     data.append('action', 'toggle_fav');
@@ -207,7 +200,7 @@ function toggleFav(produitId, btn) {
         });
 }
 
-/* ── Retirer des favoris (page client) ────────────────── */
+
 function removeFavorite(produitId) {
     const card = document.getElementById('fav-card-' + produitId);
     if (card) { card.style.opacity = '0.4'; card.style.transform = 'scale(0.95)'; }
@@ -233,9 +226,9 @@ function removeFavorite(produitId) {
         });
 }
 
-/* ── Quick-add depuis les pages catalogue ──────────────── */
+
 document.addEventListener('click', function(e) {
-    // Bouton panier (data-add-cart)
+    
     const cartBtn = e.target.closest('[data-add-cart]');
     if (cartBtn) {
         e.preventDefault();
@@ -244,7 +237,7 @@ document.addEventListener('click', function(e) {
         addToCart(id, qte);
         return;
     }
-    // Bouton favori (data-toggle-fav)
+    
     const favBtn = e.target.closest('[data-toggle-fav]');
     if (favBtn) {
         e.preventDefault();
@@ -253,10 +246,6 @@ document.addEventListener('click', function(e) {
     }
 });
 
-
-/* ═══════════════════════════════════════════════════════════
-   CLIENT PAGE (index.php) — modals & AJAX
-   ══════════════════════════════════════════════════════════ */
 
 function openProfileModal() {
     document.getElementById('profileModal')?.classList.add('open');
@@ -306,7 +295,7 @@ function submitProfile(e) {
         .finally(() => { btn.disabled = false; btn.querySelector('span').textContent = 'Enregistrer'; });
 }
 
-/* ── Modal commande ────────────────────────────────────── */
+
 function openOrderModal(commandeId) {
     const modal = document.getElementById('orderModal');
     const body  = document.getElementById('orderModalBody');
@@ -366,7 +355,7 @@ function openOrderModal(commandeId) {
         .catch(() => { body.innerHTML = '<p style="text-align:center;color:#e74c3c;padding:40px;">Erreur de chargement.</p>'; });
 }
 
-/* ── Escape key closes modals ──────────────────────────── */
+
 document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     document.getElementById('profileModal')?.classList.remove('open');
@@ -376,7 +365,7 @@ document.addEventListener('keydown', e => {
     document.body.style.overflow = '';
 });
 
-/* ── Nav user dropdown ─────────────────────────────────── */
+
 function toggleUserDropdown(e) {
     e.preventDefault();
     document.getElementById('userNavDropdown')?.classList.toggle('open');
@@ -389,7 +378,7 @@ document.addEventListener('click', function(e) {
     if (item && !item.contains(e.target)) closeUserDropdown();
 });
 
-/* ── Search overlay ────────────────────────────────────── */
+
 function openSearch(e) {
     e && e.preventDefault();
     document.getElementById('searchOverlay')?.classList.add('open');
@@ -412,7 +401,7 @@ function fillSearch(t) {
 function doSearch() {
     const q = document.getElementById('searchInput')?.value.trim();
     if (!q) return;
-    // Rediriger vers recherche.php avec le bon chemin de base
+    
     const base = window.VELVET_BASE || '';
     window.location.href = base + 'recherche.php?q=' + encodeURIComponent(q);
 }
@@ -421,7 +410,7 @@ function handleSearchKey(e) {
     if (e.key === 'Escape') closeSearch();
 }
 
-/* ── Utilities ─────────────────────────────────────────── */
+
 function esc(s) {
     return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -438,9 +427,6 @@ function fmtDate(d) {
     return dt.getDate()+' '+m[dt.getMonth()]+' '+dt.getFullYear();
 }
 
-/* ═══════════════════════════════════════════════════════════
-   PROFIL MODAL — Tabs + Password change
-   ══════════════════════════════════════════════════════════ */
 
 function switchProfileTab(tab, btn) {
     document.querySelectorAll('.profile-tab-content').forEach(t => t.classList.remove('active'));

@@ -1,5 +1,5 @@
 <?php
-// ─── includes/navbar.php ─────────────────────────────────────────────────
+
 $base = $base ?? '';
 $_nav_return = isset($navReturnToAccount) && $navReturnToAccount === true;
 
@@ -13,11 +13,11 @@ $_nav_cats_raw = $pdo->query("
 
 $_nav_cats = [];
 foreach ($_nav_cats_raw as $row) {
-    $id = $row['ID_CATEGORIE'];
-    if (!isset($_nav_cats[$id]))
-        $_nav_cats[$id] = ['nom' => $row['NOM_CATEGORIE'], 'sous' => []];
+    $_cat_id = $row['ID_CATEGORIE'];
+    if (!isset($_nav_cats[$_cat_id]))
+        $_nav_cats[$_cat_id] = ['nom' => $row['NOM_CATEGORIE'], 'sous' => []];
     if ($row['ID_SOUS_CATEGORIE'])
-        $_nav_cats[$id]['sous'][] = ['id' => $row['ID_SOUS_CATEGORIE'], 'nom' => $row['NOM_SOUS_CATEGORIE']];
+        $_nav_cats[$_cat_id]['sous'][] = ['id' => $row['ID_SOUS_CATEGORIE'], 'nom' => $row['NOM_SOUS_CATEGORIE']];
 }
 
 $_nav_tags = array_column(
@@ -25,7 +25,7 @@ $_nav_tags = array_column(
     'NOM_SOUS_CATEGORIE'
 );
 
-// Compteur panier (session)
+
 $_panier_count = 0;
 if (isset($_SESSION['panier_id'])) {
     $stmtP = $pdo->prepare("SELECT COALESCE(SUM(QUANTITE),0) FROM inclure WHERE ID_PANIER = ?");
@@ -33,9 +33,9 @@ if (isset($_SESSION['panier_id'])) {
     $_panier_count = (int)$stmtP->fetchColumn();
 }
 ?>
-<!-- VELVET base path for JS -->
+
 <script>window.VELVET_BASE = '<?= addslashes($base) ?>';</script>
-<!-- Search Overlay -->
+
 <div class="search-overlay" id="searchOverlay" onclick="closeSearchOnBg(event)">
     <div class="search-box">
         <div class="search-input-wrap">
@@ -58,13 +58,13 @@ if (isset($_SESSION['panier_id'])) {
     </div>
 </div>
 
-<!-- Mini bar -->
+
 <div class="mini-bar">
     <div class="mini-bar-slide active">Livraison gratuite à partir de 500 MAD</div>
     <div class="mini-bar-slide">Retours gratuits sous 30 jours</div>
 </div>
 
-<!-- Navigation -->
+
 <nav class="nav-bar" id="main-nav">
     <div class="nav-container">
         <div class="nav-left">
@@ -85,7 +85,6 @@ if (isset($_SESSION['panier_id'])) {
                 </a>
                 <?php if (!empty($cat['sous'])): ?>
                 <div class="nav-dropdown">
-                    <a href="<?= $catLink ?>">✦ Tout voir</a>
                     <?php foreach ($cat['sous'] as $souscat): ?>
                     <a href="<?= $base ?>client/sous-categorie.php?id=<?= $souscat['id'] ?>">
                         <?= htmlspecialchars(ucfirst(strtolower($souscat['nom']))) ?>
@@ -110,12 +109,8 @@ if (isset($_SESSION['panier_id'])) {
             </div>
 
             <?php if (isset($_SESSION['client_id'])): ?>
-                <?php if ($_nav_return): ?>
-                <div class="nav-icon-wrap">
-                    <a href="<?= $base ?>client/index.php" class="nav-icon nav-icon--active"><i class="fas fa-user"></i></a>
-                    <span class="nav-tooltip">Mon Compte</span>
-                </div>
-                <?php else: ?>
+                <?php $isClientPage = (basename($_SERVER['SCRIPT_FILENAME']) === 'index.php' && strpos($_SERVER['SCRIPT_FILENAME'], 'client') !== false); ?>
+                <?php if ($isClientPage): ?>
                 <div class="nav-item nav-user-item">
                     <a href="#" class="nav-icon nav-icon--active" onclick="toggleUserDropdown(event)"><i class="fas fa-user"></i></a>
                     <div class="nav-user-dropdown" id="userNavDropdown">
@@ -130,6 +125,11 @@ if (isset($_SESSION['panier_id'])) {
                             <i class="fas fa-right-from-bracket"></i> Déconnexion
                         </a>
                     </div>
+                </div>
+                <?php else: ?>
+                <div class="nav-icon-wrap">
+                    <a href="<?= $base ?>client/index.php" class="nav-icon nav-icon--active"><i class="fas fa-user"></i></a>
+                    <span class="nav-tooltip">Mon Compte</span>
                 </div>
                 <?php endif; ?>
             <?php else: ?>

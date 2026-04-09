@@ -63,13 +63,13 @@ try {
 
 <div class="lv-main">
 
-    <!-- Message de bienvenue -->
+    
     <div class="lv-welcome">
         Bienvenue, <span class="lv-welcome-name"><?= htmlspecialchars($livreur['prenom']) ?></span>
         !
     </div>
 
-    <!-- Toast auto-dismiss -->
+    
     <?php if ($message): ?>
     <div id="lv-auto-toast" class="lv-page-toast <?= $message_type ?>" style="display:flex;">
         <i class="fas <?= $message_type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle' ?>"></i>
@@ -84,7 +84,7 @@ try {
     </script>
     <?php endif; ?>
 
-    <!-- Stats cards -->
+    
     <div class="lv-stats-grid">
         <div class="lv-stat-card">
             <div class="lv-stat-icon"><i class="fas fa-clock"></i></div>
@@ -100,7 +100,7 @@ try {
 </a>
     </div>
 
-    <!-- Livraisons du jour -->
+    
     <div class="lv-deliveries-card">
         <div class="lv-deliveries-header">
             <h2><i class="fas fa-calendar-day"></i> Livraisons du jour — <?= date('d/m/Y') ?></h2>
@@ -164,10 +164,10 @@ try {
         </div>
     </div>
 
-</div><!-- /lv-main -->
+</div>
 
 
 <script src="../JS/script_livreur.js"></script>
-</div><!-- /lv-page-wrapper -->
+</div>
 </body>
 </html>

@@ -40,7 +40,7 @@ foreach($allMonths as $n => $nom) { $moisRevenu[] = $nom; $revenus[] = $revenusD
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../CSS/style_admin.css">
     <style>
-        /* Toast en haut de page */
+        
         .global-toast {
             position: fixed;
             top: 20px;
@@ -69,7 +69,7 @@ foreach($allMonths as $n => $nom) { $moisRevenu[] = $nom; $revenus[] = $revenusD
 <body>
 <div class="container">
 
-    <!-- SIDEBAR -->
+    
     <div class="sidebar">
         <div class="logo-section">
             <a href="index.php"><img src="../images/logo2.png" alt="Logo"></a>
@@ -87,7 +87,7 @@ foreach($allMonths as $n => $nom) { $moisRevenu[] = $nom; $revenus[] = $revenusD
         </ul>
     </div>
 
-    <!-- MAIN -->
+    
     <div class="main-content" id="mainContent">
         <h2>Tableau de bord</h2>
 
@@ -191,7 +191,7 @@ const chart2 = new Chart(document.getElementById('revenuChart'), {
                 ...sharedScales.y,
                 ticks: {
                     ...sharedScales.y.ticks,
-                    // callback retiré pour ne plus afficher " DH"
+                    
                 }
             }
         }
@@ -204,7 +204,7 @@ const ro = new ResizeObserver(() => {
 });
 ro.observe(document.getElementById('mainContent'));
 
-// ── Toast uniforme ──
+
 function showToast(msg, type) {
     let toast = document.getElementById('globalToast');
     if (!toast) {

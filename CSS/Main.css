@@ -1,6 +1,4 @@
-/* ===========================
-   VELVET FASHION — style.css
-   =========================== */
+
 
 :root {
     --black: #000000;
@@ -12,7 +10,7 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: var(--white); }
 
-/* ── Mini bar ── */
+
 .mini-bar {
     background: #030303;
     color: #fdfbfb;
@@ -37,7 +35,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 }
 .mini-bar-slide.active { opacity: 1; transform: translateY(0); }
 
-/* ── Navigation ── */
+
 .nav-bar {
     background: #f4f4f4;
     border-bottom: 1px solid rgba(106,105,104,0.15);
@@ -110,7 +108,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
     background: rgba(255,255,255,0.05);
 }
 
-/* ── Nav icons ── */
+
 .nav-icon-wrap {
     position: relative;
     display: inline-flex;
@@ -150,7 +148,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 }
 .nav-icon-wrap:hover .nav-tooltip { opacity: 1; visibility: visible; bottom: -38px; }
 
-/* ── Search overlay ── */
+
 .search-overlay {
     position: fixed;
     inset: 0;
@@ -241,7 +239,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 }
 .search-tag:hover { background: rgba(255,255,255,0.22); color: #fff; border-color: rgba(255,255,255,0.45); }
 
-/* ── Hero ── */
+
 .hero-section { background-color: var(--light-gray); padding: 80px 0; }
 .hero-title {
     font-family: 'Anton', sans-serif;
@@ -265,7 +263,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 }
 .btn-black:hover { background: #222; color: var(--white); }
 
-/* ── Marquee ── */
+
 .marquee {
     background: var(--black);
     color: var(--white);
@@ -284,7 +282,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
     100% { transform: translateX(-50%); }
 }
 
-/* ── Collections ── */
+
 .collection-section { display: flex; height: 70vh; }
 .collection-card {
     flex: 1;
@@ -353,7 +351,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
     .collection-card:hover { flex: 1; }
 }
 
-/* ── Produits ── */
+
 .product-card {
     background: #fff;
     border-radius: 16px;
@@ -409,7 +407,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 .active-size { background: #000; color: #fff; border-color: #000; }
 .size.out { color: #ccc; border-color: #eee; cursor: not-allowed; text-decoration: line-through; }
 
-/* ── Bouton Voir Plus ── */
+
 .btn-voir-plus {
     display: inline-flex;
     align-items: center;
@@ -444,7 +442,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 .btn-voir-plus i { transition: transform 0.4s ease; }
 .btn-voir-plus:hover i { transform: translateY(3px); }
 
-/* ── Panier badge navbar ── */
+
 .nav-panier-wrap { position: relative; }
 .panier-nav-badge {
     position: absolute;
@@ -461,7 +459,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
     line-height: 1;
 }
 
-/* ── Product card v2 (icon add to cart) ── */
+
 .product-card-v2 {
     background: #fff;
     border-radius: 12px;
@@ -517,7 +515,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 .product-card-v2 .pcard-price .p-promo  { font-weight: 800; font-size: 15px; color: #e74c3c; }
 .product-card-v2 .pcard-price .p-old    { font-size: 12px; color: #aaa; text-decoration: line-through; }
 
-/* ── Category page layout ── */
+
 .cat-page-wrap { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
 .cat-page-title { font-family: 'Anton', sans-serif; font-size: clamp(2.5rem,6vw,4.5rem); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
 .cat-section-row { margin-bottom: 60px; }
@@ -535,7 +533,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 .cat-products-row .product-card-v2 .pcard-price .p-normal,
 .cat-products-row .product-card-v2 .pcard-price .p-promo  { font-size: 13px; }
 
-/* ── Sous-catégorie / Produits listing ── */
+
 .sc-page-wrap  { max-width: 1300px; margin: 0 auto; padding: 40px 20px; }
 .sc-page-title { font-family: 'Anton', sans-serif; font-size: 2.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; }
 .sc-breadcrumb { font-size: 12px; color: #999; letter-spacing: 1px; margin-bottom: 32px; }
@@ -555,7 +553,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 .sc-pagination a:hover { border-color: #000; background: #000; color: #fff; }
 .sc-pagination span.current { background: #000; color: #fff; border-color: #000; }
 
-/* ── Product detail page ── */
+
 .produit-page-wrap { max-width: 1200px; margin: 0 auto; padding: 40px 20px 80px; }
 .produit-gallery { position: relative; }
 .gallery-main img {
@@ -620,7 +618,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 }
 .btn-add-fav:hover { background: #000; color: #fff; }
 
-/* ── Reviews ── */
+
 .reviews-section { margin-top: 70px; border-top: 2px solid #111; padding-top: 40px; }
 .reviews-title { font-family: 'Anton', sans-serif; font-size: 2rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; }
 .review-card { background: #f9f9f9; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
@@ -635,11 +633,11 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 .star-rating-input i { font-size: 22px; color: #ddd; cursor: pointer; transition: color 0.15s; }
 .star-rating-input i.active { color: #f4c542; }
 
-/* ── Reco section ── */
+
 .reco-section { margin-top: 80px; }
 .reco-title { font-family: 'Anton', sans-serif; font-size: 2rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; }
 
-/* ── Nouvelles Arrivées title clickable ── */
+
 .nouvelles-arrivees-section .section-link-title {
     display: inline-flex; align-items: center; gap: 12px;
     text-decoration: none; color: inherit;
@@ -648,15 +646,13 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 .nouvelles-arrivees-section .section-link-title:hover { opacity: 0.7; }
 .nouvelles-arrivees-section .section-link-title i { font-size: 1.4rem; }
 
-/* ── Footer button aliases ── */
+
 .btn-footer-send   { flex:1;padding:10px;background:#fff;color:#000;border:none;font-family:'Anton',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:background .3s; }
 .btn-footer-send:hover { background:#ddd; }
 .btn-footer-cancel { flex:1;padding:10px;background:transparent;color:rgba(249,247,242,0.5);border:1px solid rgba(255,255,255,0.15);font-family:'Anton',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:all .3s; }
 .btn-footer-cancel:hover { border-color:rgba(255,255,255,0.4);color:#fff; }
 
-/* ═══════════════════════════════════════════════════
-   VC PRODUCT CARD — shared across collection pages
-   ═══════════════════════════════════════════════════ */
+
 .vc {
     background: #fff;
     border-radius: 16px;
@@ -730,7 +726,7 @@ body { font-family: 'Inter', sans-serif; overflow-x: hidden; background-color: v
 .vc-price .pp-promo  { font-weight: 800; font-size: 15px; color: #e74c3c; }
 .vc-price .pp-old    { font-size: 12px; color: #bbb; text-decoration: line-through; }
 
-/* ── User nav icon when logged in (homepage) ── */
+
 .nav-icon--active {
     color: #1a1a1a;
     font-size: 16px;

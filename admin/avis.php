@@ -6,7 +6,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 $message = "";
 $messageType = "";
 
-// ── SUPPRIMER AVIS ──
+
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $pdo->prepare("DELETE FROM avis WHERE ID_AVIS = ?")->execute([$id]);
@@ -19,7 +19,7 @@ if (isset($_GET['msg'])) {
     $messageType = $_GET['type'] ?? 'success';
 }
 
-// ── CHARGER AVIS ──
+
 $avis_list = $pdo->query("
     SELECT a.*,
            CONCAT(cl.PRENOM_CLIENT, ' ', cl.NOM_CLIENT) AS NOM_CLIENT,
@@ -30,7 +30,7 @@ $avis_list = $pdo->query("
     ORDER BY a.DATE_AVIS DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-// Stats
+
 $total      = count($avis_list);
 $moyenne    = $total > 0 ? round(array_sum(array_column($avis_list, 'NOTE')) / $total, 1) : 0;
 $notes_dist = array_fill(1, 5, 0);

@@ -50,7 +50,7 @@ function getCartImg(array $p): string {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../CSS/style.css">
     <style>
-        /* ── Hero (collection-homme style) ── */
+        
         .cart-hero {
             position: relative;
             background: #0a0a0a;
@@ -101,7 +101,7 @@ function getCartImg(array $p): string {
             margin: 18px auto;
         }
 
-        /* ── Breadcrumb ── */
+        
         .breadcrumb-bar {
             background: #f7f5f2;
             padding: 11px 0;
@@ -112,10 +112,10 @@ function getCartImg(array $p): string {
         .breadcrumb-bar span { color:#000; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; font-weight:600; }
         .breadcrumb-bar i { font-size:8px; color:#ccc; margin: 0 8px; }
 
-        /* ── Content ── */
+        
         .cart-wrap { padding: 50px 0 80px; }
 
-        /* ── Delivery banner ── */
+        
         .delivery-banner {
             background: #fff;
             border-radius: 14px;
@@ -144,7 +144,7 @@ function getCartImg(array $p): string {
             transition: width .6s ease;
         }
 
-        /* ── Product cards (same as collection-homme) ── */
+        
         .prod-card {
             background: #fff;
             border-radius: 14px;
@@ -168,7 +168,7 @@ function getCartImg(array $p): string {
             color: #ccc; font-size: 2.5rem;
         }
 
-        /* Badges */
+        
         .badge-promo {
             position: absolute; top: 12px; left: 12px;
             background: #e63946; color: #fff;
@@ -183,7 +183,7 @@ function getCartImg(array $p): string {
             padding: 4px 10px; border-radius: 20px; z-index: 2;
         }
 
-        /* Remove button on card */
+        
         .btn-card-remove {
             position: absolute; bottom: 12px; right: 12px;
             width: 36px; height: 36px;
@@ -196,7 +196,7 @@ function getCartImg(array $p): string {
         .btn-card-remove:hover { background: #e63946; }
         .btn-card-remove:hover i { color: #fff; }
 
-        /* Card body */
+        
         .prod-body { padding: 14px 16px 16px; }
         .prod-sc { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #bbb; margin-bottom: 3px; }
         .prod-name { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 8px; line-height: 1.3; }
@@ -205,7 +205,7 @@ function getCartImg(array $p): string {
         .price-final.sale { color: #e63946; }
         .price-old { font-size: 11px; color: #bbb; text-decoration: line-through; }
 
-        /* Qty controls */
+        
         .qty-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
         .qty-controls {
             display: inline-flex;
@@ -240,7 +240,7 @@ function getCartImg(array $p): string {
             margin-left: auto;
         }
 
-        /* Animation */
+        
         .prod-col {
             opacity: 0;
             transform: translateY(22px);
@@ -254,7 +254,7 @@ function getCartImg(array $p): string {
             to { opacity: 0; transform: scale(0.9) translateY(10px); }
         }
 
-        /* ── Summary card ── */
+        
         .summary-card {
             background: #fff;
             border-radius: 16px;
@@ -322,7 +322,7 @@ function getCartImg(array $p): string {
         }
         .continue-link:hover { color: #000; }
 
-        /* ── Empty state ── */
+        
         .cart-empty {
             text-align: center;
             padding: 100px 20px;
@@ -348,7 +348,7 @@ function getCartImg(array $p): string {
         }
         .btn-shop:hover { background: #333; color: #fff; }
 
-        /* Toast */
+        
         #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
                  background: #000; color: #fff; padding: 12px 24px; border-radius: 40px;
                  font-size: 13px; font-weight: 600; z-index: 9999;
@@ -359,7 +359,7 @@ function getCartImg(array $p): string {
         #toast.info { background: #333; }
         #toast.warning { background: #f39c12; }
 
-        /* Responsive */
+        
         @media (max-width: 991px) {
             .summary-card { position: static; margin-top: 30px; }
         }
@@ -369,7 +369,7 @@ function getCartImg(array $p): string {
 
 <?php $base = '../'; include __DIR__ . '/../includes/navbar.php'; ?>
 
-<!-- ════ HERO ════ -->
+
 <div class="cart-hero">
     <div class="cart-hero-bg">PANIER</div>
     <div class="container position-relative">
@@ -382,7 +382,7 @@ function getCartImg(array $p): string {
     </div>
 </div>
 
-<!-- ════ BREADCRUMB ════ -->
+
 <div class="breadcrumb-bar">
     <div class="container">
         <a href="<?= $clientId ? 'index.php' : '../index.php' ?>">Accueil</a>
@@ -391,7 +391,7 @@ function getCartImg(array $p): string {
     </div>
 </div>
 
-<!-- ════ CONTENT ════ -->
+
 <section class="cart-wrap">
     <div class="container">
 
@@ -407,10 +407,10 @@ function getCartImg(array $p): string {
         <?php else: ?>
         <div class="row g-4">
 
-            <!-- ── Left: product cards grid ── -->
+            
             <div class="col-lg-8">
 
-                <!-- Delivery bar -->
+                
                 <?php if ($sousTotal < 500): ?>
                 <div class="delivery-banner" id="deliveryBanner">
                     <div>
@@ -430,7 +430,7 @@ function getCartImg(array $p): string {
                 </div>
                 <?php endif; ?>
 
-                <!-- Cart items as cards -->
+                
                 <div class="row g-3 g-md-4" id="cartGrid">
                     <?php foreach ($items as $i => $it):
                         $img      = getCartImg($it);
@@ -443,7 +443,7 @@ function getCartImg(array $p): string {
                     <div class="col-6 col-md-4 prod-col" id="cart-col-<?= $it['ID_PRODUIT'] ?>" style="animation-delay: <?= $i * 0.045 ?>s;">
                         <div class="prod-card">
 
-                            <!-- Image -->
+                            
                             <div class="prod-img-wrap">
                                 <a href="produit.php?id=<?= $it['ID_PRODUIT'] ?>">
                                     <?php if ($img): ?>
@@ -470,7 +470,7 @@ function getCartImg(array $p): string {
                                 </button>
                             </div>
 
-                            <!-- Info -->
+                            
                             <div class="prod-body">
                                 <?php if ($it['NOM_SOUS_CATEGORIE']): ?>
                                     <p class="prod-sc"><?= htmlspecialchars($it['NOM_SOUS_CATEGORIE']) ?></p>
@@ -487,7 +487,7 @@ function getCartImg(array $p): string {
                                     <?php endif; ?>
                                 </div>
 
-                                <!-- Qty + line total -->
+                                
                                 <div class="qty-row">
                                     <div class="qty-controls">
                                         <button class="qty-btn"
@@ -507,7 +507,7 @@ function getCartImg(array $p): string {
                 </div>
             </div>
 
-            <!-- ── Right: summary ── -->
+            
             <div class="col-lg-4">
                 <div class="summary-card">
                     <h3 class="summary-title">Récapitulatif</h3>
@@ -556,7 +556,7 @@ function getCartImg(array $p): string {
 <div id="toast" class="toast-msg"></div>
 
 <script>
-/* ── Data state ── */
+
 const PRIX = {
     <?php foreach ($items as $it):
         $promo = $it['EN_PROMO'] && $it['PRIX_PROMO'];
@@ -567,19 +567,21 @@ const PRIX = {
 };
 const STOCK = {
     <?php foreach ($items as $it): ?>
-    <?= $it['ID_PRODUIT'] ?>: <?= min(10, max(1,(int)$it['stock_total'])) ?>,
+    <?= $it['ID_PRODUIT'] ?>: <?= max(0,(int)$it['stock_total']) ?>,
     <?php endforeach; ?>
 };
 
-/* ── Change quantity ── */
+
 function changeQty(produitId, delta, stockMax) {
     const qtyEl = document.getElementById('qty-' + produitId);
     if (!qtyEl) return;
     let current = parseInt(qtyEl.textContent, 10);
     let newQty  = current + delta;
     if (newQty < 1) { removeItem(produitId, PRIX[produitId]); return; }
-    if (newQty > (STOCK[produitId] || 10)) {
-        showToast('Stock maximum atteint.', 'warning'); return;
+    const maxStock = STOCK[produitId] || 0;
+    if (newQty > maxStock) {
+        showToast('Stock insuffisant. Il ne reste que ' + maxStock + ' article(s) disponible(s).', 'warning');
+        return;
     }
     qtyEl.textContent = newQty;
 
@@ -594,12 +596,18 @@ function changeQty(produitId, delta, stockMax) {
     fetch('actions.php', { method: 'POST', body: data })
         .then(r => r.json())
         .then(res => {
-            if (res.success) updateSummary(res);
+            if (res.success) {
+                updateSummary(res);
+            } else {
+                qtyEl.textContent = current;
+                if (lineTotal) lineTotal.textContent = Math.round(PRIX[produitId] * current).toLocaleString('fr-MA') + ' DH';
+                showToast(res.message || 'Erreur.', 'warning');
+            }
         })
         .catch(() => showToast('Erreur réseau', 'error'));
 }
 
-/* ── Remove item ── */
+
 function removeItem(produitId, prixUnit) {
     const col = document.getElementById('cart-col-' + produitId);
     if (col) col.classList.add('removing');
@@ -624,7 +632,7 @@ function removeItem(produitId, prixUnit) {
         .catch(() => showToast('Erreur réseau', 'error'));
 }
 
-/* ── Update summary ── */
+
 function updateSummary(res) {
     const sST = document.getElementById('summSousTotal');
     const sLV = document.getElementById('summLivraison');
@@ -663,7 +671,7 @@ function updateSummary(res) {
     updateNavBadge(res.panier_count);
 }
 
-/* ── Update nav badge ── */
+
 function updateNavBadge(count) {
     const badges = document.querySelectorAll('.panier-nav-badge');
     badges.forEach(b => {
@@ -672,7 +680,7 @@ function updateNavBadge(count) {
     });
 }
 
-/* ── Checkout ── */
+
 async function passerCommande() {
     const btn = document.getElementById('checkoutBtn');
     btn.disabled = true;

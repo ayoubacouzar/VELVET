@@ -1,19 +1,14 @@
 <?php
-// ════════════════════════════════════════════════════════════════
-//  client/collection-femme.php — Page Collection Femmes
-// ════════════════════════════════════════════════════════════════
 session_start();
 require_once __DIR__ . '/../db.php';
 
 $base = '../';
 
-// ── Récupérer l'ID de la catégorie "Femmes" ───────────────────────
 $stmtCat = $pdo->prepare("SELECT ID_CATEGORIE FROM categorie WHERE LOWER(NOM_CATEGORIE) = 'femmes' LIMIT 1");
 $stmtCat->execute();
 $catFemme = $stmtCat->fetch();
 $catId = $catFemme ? $catFemme['ID_CATEGORIE'] : 0;
 
-// ── Sous-catégories de "Femmes" ───────────────────────────────────
 $sousCats = [];
 if ($catId) {
     $stmt = $pdo->prepare("SELECT * FROM sous_categorie WHERE ID_CATEGORIE = ? ORDER BY NOM_SOUS_CATEGORIE");
@@ -21,12 +16,10 @@ if ($catId) {
     $sousCats = $stmt->fetchAll();
 }
 
-// ── Filtres ────────────────────────────────────────────────────────
 $filterSc    = isset($_GET['sc'])     ? (int)$_GET['sc']     : 0;
 $filterPromo = isset($_GET['promo'])  && $_GET['promo'] === '1';
 $sort        = $_GET['sort'] ?? 'newest';
 
-// ── Requête produits ──────────────────────────────────────────────
 $where  = ['sc.ID_CATEGORIE = :catId'];
 $params = [':catId' => $catId];
 
@@ -47,12 +40,10 @@ $orderBy = match($sort) {
 
 $whereSQL = implode(' AND ', $where);
 
-// ── Pagination ────────────────────────────────────────────────────
 $perPage  = 15;
 $page     = max(1, (int)($_GET['page'] ?? 1));
 
 try {
-    // Total count
     $stmtCount = $pdo->prepare("
         SELECT COUNT(*) FROM produit p
         LEFT JOIN sous_categorie sc ON p.ID_SOUS_CATEGORIE = sc.ID_SOUS_CATEGORIE
@@ -67,9 +58,9 @@ try {
 
     $stmt = $pdo->prepare("
         SELECT p.*,
-               sc.NOM_SOUS_CATEGORIE,
-               COALESCE(NULLIF(p.PRIX_PROMO,0)*p.EN_PROMO, p.PRIX) AS prix_final,
-               (SELECT COALESCE(SUM(QUANTITE),0) FROM modele_produit WHERE ID_PRODUIT = p.ID_PRODUIT) AS stock_total
+            sc.NOM_SOUS_CATEGORIE,
+            COALESCE(NULLIF(p.PRIX_PROMO,0)*p.EN_PROMO, p.PRIX) AS prix_final,
+            (SELECT COALESCE(SUM(QUANTITE),0) FROM modele_produit WHERE ID_PRODUIT = p.ID_PRODUIT) AS stock_total
         FROM produit p
         LEFT JOIN sous_categorie sc ON p.ID_SOUS_CATEGORIE = sc.ID_SOUS_CATEGORIE
         WHERE $whereSQL
@@ -85,7 +76,6 @@ try {
     $page = 1;
 }
 
-// ── Tailles par produit ───────────────────────────────────────────
 $taillesParProduit = [];
 if (!empty($produits)) {
     $ids = array_column($produits, 'ID_PRODUIT');
@@ -118,7 +108,6 @@ function getImg(array $p): string {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../CSS/style.css">
     <style>
-        /* ── Hero ── */
         .coll-hero {
             position: relative;
             background: #0a0a0a;
@@ -172,7 +161,6 @@ function getImg(array $p): string {
             margin: 18px auto;
         }
 
-        /* ── Breadcrumb ── */
         .breadcrumb-bar {
             background: #f7f5f2;
             padding: 11px 0;
@@ -183,7 +171,6 @@ function getImg(array $p): string {
         .breadcrumb-bar span { color:#000; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; font-weight:600; }
         .breadcrumb-bar i { font-size:8px; color:#ccc; margin: 0 8px; }
 
-        /* ── Filter bar ── */
         .filter-bar {
             background: #fff;
             border-bottom: 1px solid #eee;
@@ -249,10 +236,8 @@ function getImg(array $p): string {
         .sort-select:focus { border-color: #000; }
         .results-count { font-size: 11px; color: #aaa; white-space: nowrap; margin-left: 8px; }
 
-        /* ── Layout ── */
         .collection-wrap { padding: 50px 0 80px; }
 
-        /* ── Product cards ── */
         .prod-card {
             background: #fff;
             border-radius: 14px;
@@ -275,7 +260,6 @@ function getImg(array $p): string {
             color: #ccc; font-size: 2.5rem;
         }
 
-        /* Badges */
         .badge-nouveau {
             position: absolute; top: 12px; left: 12px;
             background: #000; color: #fff;
@@ -297,7 +281,6 @@ function getImg(array $p): string {
             padding: 4px 10px; border-radius: 20px; z-index: 2;
         }
 
-        /* Wishlist button */
         .btn-wish {
             position: absolute; bottom: 12px; right: 12px;
             width: 36px; height: 36px;
@@ -311,7 +294,6 @@ function getImg(array $p): string {
         .btn-wish:hover i { color: #fff; }
         .btn-wish.liked i { color: #e63946; font-weight: 900; }
 
-        /* Card body */
         .prod-body { padding: 14px 16px 16px; }
         .prod-sc { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #bbb; margin-bottom: 3px; }
         .prod-name { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 8px; line-height: 1.3; }
@@ -320,7 +302,6 @@ function getImg(array $p): string {
         .price-final.sale { color: #e63946; }
         .price-old { font-size: 11px; color: #bbb; text-decoration: line-through; }
 
-        /* Tailles */
         .sizes-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
         .sz {
             border: 1.5px solid #e0e0e0;
@@ -339,7 +320,6 @@ function getImg(array $p): string {
         .sz-stock { font-size: 9px; color: #bbb; margin-bottom: 10px; }
         .sz-stock.low { color: #e63946; font-weight: 700; }
 
-        /* Panier button */
         .btn-cart {
             display: inline-flex; align-items: center; justify-content: center;
             width: 38px; height: 38px;
@@ -352,7 +332,6 @@ function getImg(array $p): string {
         .btn-cart:disabled { background: #ccc; cursor: not-allowed; transform: none; }
         .btn-cart.added   { background: #27ae60; }
 
-        /* Animations */
         .prod-col {
             opacity: 0;
             transform: translateY(22px);
@@ -360,16 +339,14 @@ function getImg(array $p): string {
         }
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* Empty state */
         .empty-coll { text-align: center; padding: 80px 0; color: #bbb; }
         .empty-coll i { font-size: 3rem; margin-bottom: 16px; display: block; }
         .empty-coll p { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* Toast */
         #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-                 background: #000; color: #fff; padding: 12px 24px; border-radius: 40px;
-                 font-size: 13px; font-weight: 600; z-index: 9999;
-                 opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
+                background: #000; color: #fff; padding: 12px 24px; border-radius: 40px;
+                font-size: 13px; font-weight: 600; z-index: 9999;
+                opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
         #toast.show { opacity: 1; }
         #toast.success { background: #111; }
         #toast.error { background: #e63946; }
@@ -380,7 +357,6 @@ function getImg(array $p): string {
 
 <?php include __DIR__ . '/../includes/navbar.php'; ?>
 
-<!-- ════ HERO ════ -->
 <div class="coll-hero">
     <div class="coll-hero-bg">FEMME</div>
     <div class="container position-relative">
@@ -391,7 +367,6 @@ function getImg(array $p): string {
     </div>
 </div>
 
-<!-- ════ BREADCRUMB ════ -->
 <div class="breadcrumb-bar">
     <div class="container">
         <a href="../index.php">Accueil</a>
@@ -400,7 +375,6 @@ function getImg(array $p): string {
     </div>
 </div>
 
-<!-- ════ FILTER BAR ════ -->
 <div class="filter-bar">
     <div class="container">
         <div class="filter-inner">
@@ -435,7 +409,6 @@ function getImg(array $p): string {
     </div>
 </div>
 
-<!-- ════ PRODUITS ════ -->
 <section class="collection-wrap">
     <div class="container">
         <?php if (empty($produits)): ?>
@@ -459,13 +432,12 @@ function getImg(array $p): string {
             <div class="col-6 col-md-4 col-lg-3 prod-col" style="animation-delay: <?= $i * 0.045 ?>s;">
                 <div class="prod-card">
 
-                    <!-- Image -->
                     <div class="prod-img-wrap">
                         <a href="produit.php?id=<?= $p['ID_PRODUIT'] ?>">
                             <?php if ($img): ?>
                                 <img src="<?= htmlspecialchars('../' . $img) ?>"
-                                     alt="<?= htmlspecialchars($p['NOM_PRODUIT']) ?>"
-                                     onerror="this.parentNode.innerHTML='<div class=\'prod-no-img\'><i class=\'fas fa-tshirt\'></i></div>'">
+                                    alt="<?= htmlspecialchars($p['NOM_PRODUIT']) ?>"
+                                    onerror="this.parentNode.innerHTML='<div class=\'prod-no-img\'><i class=\'fas fa-tshirt\'></i></div>'">
                             <?php else: ?>
                                 <div class="prod-no-img"><i class="fas fa-tshirt"></i></div>
                             <?php endif; ?>
@@ -486,7 +458,7 @@ function getImg(array $p): string {
                         </button>
                     </div>
 
-                    <!-- Info -->
+                    
                     <div class="prod-body">
                         <?php if ($p['NOM_SOUS_CATEGORIE']): ?>
                             <p class="prod-sc"><?= htmlspecialchars($p['NOM_SOUS_CATEGORIE']) ?></p>
@@ -503,7 +475,6 @@ function getImg(array $p): string {
                             <?php endif; ?>
                         </div>
 
-                        <!-- Tailles -->
                         <?php if (!empty($tailles)): ?>
                         <div class="sizes-row" id="sizes-<?= $p['ID_PRODUIT'] ?>">
                             <?php foreach ($tailles as $t):
@@ -514,14 +485,14 @@ function getImg(array $p): string {
                                 elseif ($active) $cls .= ' sz-active';
                             ?>
                             <span class="<?= $cls ?>"
-                                  data-qty="<?= (int)$t['QUANTITE'] ?>"
-                                  onclick="selectSize(this, <?= $p['ID_PRODUIT'] ?>)">
+                                data-qty="<?= (int)$t['QUANTITE'] ?>"
+                                onclick="selectSize(this, <?= $p['ID_PRODUIT'] ?>)">
                                 <?= htmlspecialchars($t['TAILLE']) ?>
                             </span>
                             <?php endforeach; ?>
                         </div>
                         <p class="sz-stock <?= ($firstAvail && $firstAvail['QUANTITE'] <= 3) ? 'low' : '' ?>"
-                           id="stock-<?= $p['ID_PRODUIT'] ?>">
+                        id="stock-<?= $p['ID_PRODUIT'] ?>">
                             <?php if ($firstAvail): ?>
                                 <?php if ($firstAvail['QUANTITE'] <= 3): ?>
                                     ⚠ Plus que <?= $firstAvail['QUANTITE'] ?> en stock
@@ -534,7 +505,6 @@ function getImg(array $p): string {
                         </p>
                         <?php endif; ?>
 
-                        <!-- Panier -->
                         <button class="btn-cart"
                                 id="cartbtn-<?= $p['ID_PRODUIT'] ?>"
                                 data-add-cart="<?= $p['ID_PRODUIT'] ?>"
@@ -548,7 +518,6 @@ function getImg(array $p): string {
             <?php endforeach; ?>
         </div>
 
-        <!-- ── Pagination ── -->
         <?php if ($totalPages > 1): ?>
         <div class="velvet-pagination">
             <?php if ($page > 1): ?>
@@ -558,11 +527,11 @@ function getImg(array $p): string {
             <?php endif; ?>
             <?php for ($p = 1; $p <= $totalPages; $p++):
                 $active = $p === $page;
-                // Show first, last, current ±2
                 if ($p === 1 || $p === $totalPages || abs($p - $page) <= 2):
             ?>
                 <a href="?<?= http_build_query(array_merge($_GET, ['page' => $p])) ?>"
-                   class="vpg-btn <?= $active ? 'vpg-active' : '' ?>"><?= $p ?></a>
+                    class="vpg-btn <?= $active ? 'vpg-active' : '' ?>"><?= $p ?>
+                </a>
             <?php elseif (abs($p - $page) === 3): ?>
                 <span class="vpg-dots">…</span>
             <?php endif; ?>
@@ -585,14 +554,13 @@ function getImg(array $p): string {
 
 <script src="../JS/script.js"></script>
 <script>
-// ── Tri ────────────────────────────────────────────────────────
+
 function applySort(val) {
     const url = new URL(window.location.href);
     url.searchParams.set('sort', val);
     window.location.href = url.toString();
 }
 
-// ── Sélection taille ──────────────────────────────────────────
 function selectSize(el, prodId) {
     if (el.classList.contains('sz-out')) return;
     const wrap = document.getElementById('sizes-' + prodId);
@@ -614,7 +582,6 @@ function selectSize(el, prodId) {
     }
 }
 
-// ── Favoris toggle ─────────────────────────────────────────────
 function toggleWish(btn) {
     const prodId = btn.dataset.toggleFav || btn.dataset.prodId;
     if (prodId) { toggleFav(prodId, btn); return; }

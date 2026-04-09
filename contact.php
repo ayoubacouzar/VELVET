@@ -1,5 +1,5 @@
 <?php
-// contact.php — racine du site
+
 session_start();
 require_once __DIR__ . '/db.php';
 header('Content-Type: application/json');

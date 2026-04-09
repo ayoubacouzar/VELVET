@@ -1,8 +1,6 @@
-/* ===========================
-   VELVET FASHION — Main.js
-   =========================== */
 
-// ── Mini-bar rotation ──
+
+
 (function () {
     const slides = document.querySelectorAll('.mini-bar-slide');
     if (!slides.length) return;
@@ -14,7 +12,7 @@
     }, 5000);
 })();
 
-// ── Scroll smooth avec easing easeInOutCubic ──
+
 function smoothScrollTo(targetId) {
     const el = document.getElementById(targetId);
     if (!el) return;
@@ -37,10 +35,10 @@ function smoothScrollTo(targetId) {
     requestAnimationFrame(step);
 }
 
-// ── Alias générique ──
+
 function scrollToSection(id) { smoothScrollTo(id); }
 
-// ── Sélection de taille ──
+
 document.querySelectorAll('.sizes').forEach(group => {
     group.querySelectorAll('.size:not(.out)').forEach(size => {
         size.addEventListener('click', () => {
@@ -50,7 +48,7 @@ document.querySelectorAll('.sizes').forEach(group => {
     });
 });
 
-// ── Recherche — Ouvrir ──
+
 function openSearch(e) {
     e.preventDefault();
     document.getElementById('searchOverlay').classList.add('open');
@@ -58,25 +56,25 @@ function openSearch(e) {
     setTimeout(() => document.getElementById('searchInput').focus(), 350);
 }
 
-// ── Recherche — Fermer ──
+
 function closeSearch() {
     document.getElementById('searchOverlay').classList.remove('open');
     document.body.style.overflow = '';
     document.getElementById('searchInput').value = '';
 }
 
-// ── Recherche — Fermer en cliquant en dehors ──
+
 function closeSearchOnBg(e) {
     if (e.target === document.getElementById('searchOverlay')) closeSearch();
 }
 
-// ── Recherche — Remplir le champ avec un tag ──
+
 function fillSearch(t) {
     document.getElementById('searchInput').value = t;
     document.getElementById('searchInput').focus();
 }
 
-// ── Recherche — Lancer ──
+
 function doSearch() {
     const q = document.getElementById('searchInput').value.trim();
     if (!q) return;
@@ -84,27 +82,29 @@ function doSearch() {
     window.location.href = base + 'recherche.php?q=' + encodeURIComponent(q);
 }
 
-// ── Navigation helpers (homepage) ──
+
 function goToProducts() {
     const base = window.VELVET_BASE || '';
     window.location.href = base + 'client/nouvelles-arrivees.php';
 }
 function goToCollection() {
-    const el = document.getElementById('collection-section');
-    if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-    else { window.location.href = (window.VELVET_BASE || '') + 'client/collection-femme.php'; }
+    const el = document.getElementById('products-section');
+    if (el) { smoothScrollTo('products-section'); }
+    else { window.location.href = (window.VELVET_BASE || '') + 'client/nouvelles-arrivees.php'; }
 }
 function goToCategories() {
-    window.location.href = (window.VELVET_BASE || '') + 'client/nouvelles-arrivees.php';
+    const el = document.getElementById('collection-section');
+    if (el) { smoothScrollTo('collection-section'); }
+    else { window.location.href = (window.VELVET_BASE || '') + 'client/collection-homme.php'; }
 }
 
-// ── Recherche — Raccourcis clavier ──
+
 function handleSearchKey(e) {
     if (e.key === 'Enter')  doSearch();
     if (e.key === 'Escape') closeSearch();
 }
 
-// ── Dropdown user (navbar) ──
+
 function toggleUserDropdown(e) {
     e.preventDefault();
     const dd = document.getElementById('userNavDropdown');
@@ -119,7 +119,7 @@ document.addEventListener('click', function(e) {
     if (userItem && !userItem.contains(e.target)) closeUserDropdown();
 });
 
-// ── Toast global ──
+
 function showToast(msg, type = 'success') {
     let t = document.getElementById('toast-global');
     if (!t) {
@@ -150,7 +150,7 @@ function showToast(msg, type = 'success') {
         t.style.transform = 'translateX(-50%) translateY(20px)';
     }, 2800);
 }
-// ── Update panier badge ──
+
 function updatePanierBadge(count) {
     let badge = document.querySelector('.panier-nav-badge');
     const wrap  = document.querySelector('.nav-panier-wrap');
@@ -167,7 +167,7 @@ function updatePanierBadge(count) {
     }
 }
 
-// ── Quick add to cart (from homepage — works for guests too) ──
+
 function quickAddToCart(id) {
     const inClient = window.location.pathname.includes('/client/');
     const actionsUrl = inClient ? 'actions.php' : 'client/actions.php';
@@ -191,13 +191,13 @@ function quickAddToCart(id) {
     .catch(() => { window.location.href = prodUrl; });
 }
 
-// ── Quick add to favourites (from homepage — silent) ──
+
 function quickAddToFav(id) {
     const inClient = window.location.pathname.includes('/client/');
     const actionsUrl = inClient ? 'actions.php' : 'client/actions.php';
     const loginUrl   = inClient ? '../login.php' : 'login.php';
 
-    const loggedIn = !!document.getElementById('userNavDropdown');
+    const loggedIn = !!document.querySelector('.nav-icon--active');
     if (!loggedIn) { window.location.href = loginUrl; return; }
 
     fetch(actionsUrl, {

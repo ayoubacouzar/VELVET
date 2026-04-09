@@ -6,7 +6,7 @@ $base = '../';
 $scId = (int)($_GET['id'] ?? 0);
 if (!$scId) { header('Location: ../index.php'); exit; }
 
-// Récupérer la sous-catégorie + catégorie parent
+
 $stmtSc = $pdo->prepare("
     SELECT sc.*, c.NOM_CATEGORIE, c.ID_CATEGORIE
     FROM sous_categorie sc
@@ -17,12 +17,12 @@ $stmtSc->execute([$scId]);
 $sc = $stmtSc->fetch(PDO::FETCH_ASSOC);
 if (!$sc) { header('Location: ../index.php'); exit; }
 
-// Pagination
+
 $perPage = 12;
 $page    = max(1, (int)($_GET['page'] ?? 1));
 $offset  = ($page - 1) * $perPage;
 
-// Tri
+
 $sortAllowed = [
     'date_desc' => 'p.DATE_PRODUIT DESC, p.ID_PRODUIT DESC',
     'prix_asc'  => 'p.PRIX ASC',
@@ -32,7 +32,7 @@ $sortAllowed = [
 $sort    = array_key_exists($_GET['sort'] ?? '', $sortAllowed) ? $_GET['sort'] : 'date_desc';
 $orderBy = $sortAllowed[$sort];
 
-// Total
+
 $stmtCount = $pdo->prepare("SELECT COUNT(*) FROM produit WHERE ID_SOUS_CATEGORIE = ?");
 $stmtCount->execute([$scId]);
 $total      = (int)$stmtCount->fetchColumn();
@@ -40,7 +40,7 @@ $totalPages = max(1, ceil($total / $perPage));
 if ($page > $totalPages) $page = $totalPages;
 $offset = ($page - 1) * $perPage;
 
-// Produits
+
 $stmtProd = $pdo->prepare("
     SELECT p.*
     FROM produit p
@@ -51,7 +51,7 @@ $stmtProd = $pdo->prepare("
 $stmtProd->execute([$scId]);
 $produits = $stmtProd->fetchAll(PDO::FETCH_ASSOC);
 
-// Lien catégorie parent
+
 $nomCat = strtolower(trim($sc['NOM_CATEGORIE']));
 if ($nomCat === 'femmes')      $catLink = 'collection-femme.php';
 elseif ($nomCat === 'hommes')  $catLink = 'collection-homme.php';
@@ -64,14 +64,14 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="../images/VELVET_LOGO_blanc.png">
     <title><?= htmlspecialchars($scNom) ?> — Velvet</title>
-    <link rel="icon" type="image/png" href="../images/velvet.png">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../CSS/style.css">
     <style>
-    /* ── Page Hero Header ── */
+    
     .sc-hero {
         background: #111;
         color: #fff;
@@ -120,7 +120,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
         position: relative;
     }
 
-    /* ── Toolbar ── */
+    
     .sc-toolbar {
         background: #fff;
         border-bottom: 1px solid #eee;
@@ -172,7 +172,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
     }
     .sc-sort select:focus { border-color: #111; }
 
-    /* ── Products grid ── */
+    
     .sc-page-body {
         max-width: 1280px;
         margin: 0 auto;
@@ -188,8 +188,8 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
     @media (max-width: 720px)  { .sc-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; } }
     @media (max-width: 420px)  { .sc-grid { grid-template-columns: 1fr; } }
 
-    /* ── Product card ── */
-    /* ── prod-card (unified design) ── */
+    
+    
     .prod-card { background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.06);transition:transform .3s,box-shadow .3s; }
     .prod-card:hover { transform:translateY(-5px);box-shadow:0 12px 30px rgba(0,0,0,.10); }
     .prod-img-wrap { position:relative;overflow:hidden;aspect-ratio:3/4; }
@@ -239,7 +239,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
     }
     .vc:hover .vc-img-wrap img { transform: scale(1.07); }
 
-    /* badges */
+    
     .vc-badge {
         position: absolute;
         top: 12px; left: 12px;
@@ -250,7 +250,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
     .vc-badge-new   { background: #111; color: #fff; }
     .vc-badge-promo { background: #e74c3c; color: #fff; }
 
-    /* Wishlist btn */
+    
     .vc-wish {
         position: absolute;
         top: 10px; right: 10px;
@@ -275,7 +275,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
     }
     .vc-cart:hover { background: #111; color: #fff; transform: scale(1.1); }
 
-    /* Quick-add overlay */
+    
     .vc-add-overlay {
         position: absolute;
         bottom: 0; left: 0; right: 0;
@@ -294,7 +294,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
     }
     .vc:hover .vc-add-overlay { transform: translateY(0); }
 
-    /* Info */
+    
     .vc-info { padding: 14px 16px 18px; }
     .vc-cat  { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #aaa; margin-bottom: 4px; }
     .vc-name { font-weight: 600; font-size: 14px; color: #111; margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -303,7 +303,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
     .vc-price .pp-promo  { font-weight: 800; font-size: 15px; color: #e74c3c; }
     .vc-price .pp-old    { font-size: 12px; color: #bbb; text-decoration: line-through; }
 
-    /* ── Empty state ── */
+    
     .sc-empty {
         text-align: center;
         padding: 80px 20px;
@@ -313,7 +313,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
     .sc-empty h3 { font-family: 'Anton', sans-serif; font-size: 1.6rem; letter-spacing: 2px; text-transform: uppercase; color: #ccc; margin-bottom: 8px; }
     .sc-empty p  { font-size: 14px; }
 
-    /* ── Pagination ── */
+    
     .sc-pager {
         display: flex;
         justify-content: center;
@@ -344,7 +344,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
 
 <?php include '../includes/navbar.php'; ?>
 
-<!-- ── Hero Header ── -->
+
 <div class="sc-hero">
     <div class="sc-breadcrumb-hero">
         <a href="../index.php">Accueil</a>
@@ -357,7 +357,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
     <p class="sc-hero-meta"><?= $total ?> article<?= $total > 1 ? 's' : '' ?> disponible<?= $total > 1 ? 's' : '' ?></p>
 </div>
 
-<!-- ── Toolbar ── -->
+
 <div class="sc-toolbar">
     <div class="sc-toolbar-inner">
         <div class="sc-count">
@@ -377,7 +377,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
     </div>
 </div>
 
-<!-- ── Body ── -->
+
 <div class="sc-page-body">
 
     <?php if (empty($produits)): ?>
@@ -431,7 +431,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
         <?php endforeach; ?>
     </div>
 
-    <!-- Pagination -->
+    
     <?php if ($totalPages > 1): ?>
     <nav class="sc-pager">
         <?php if ($page > 1): ?>
@@ -441,7 +441,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
         <?php endif; ?>
 
         <?php
-        // Smart pagination: show first, last, and pages around current
+        
         $range = 2;
         $pages = [];
         for ($i = 1; $i <= $totalPages; $i++) {
@@ -501,7 +501,7 @@ function vcCart(id, btn) {
                 if (icon) icon.className = 'fas fa-check';
                 btn.style.background = '#28a745';
                 btn.style.color = '#fff';
-                // Badge navbar
+                
                 const badges = document.querySelectorAll('.panier-nav-badge');
                 badges.forEach(b => { b.textContent = d.panier_count; b.style.display = 'flex'; });
                 setTimeout(() => {

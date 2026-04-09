@@ -6,12 +6,12 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 $message = "";
 $messageType = "";
 
-// ── ASSIGNER LIVREUR ──
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'assign_livreur') {
     $id_commande = (int)$_POST['id_commande'];
     $id_livreur  = (int)$_POST['id_livreur'];
 
-    // Vérifier si la commande est déjà livrée
+    
     $chkStatut = $pdo->prepare("SELECT STATUT_COMMANDE FROM commande WHERE ID_COMMANDE = ?");
     $chkStatut->execute([$id_commande]);
     $statut = $chkStatut->fetchColumn();
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'assig
             $pdo->prepare("INSERT INTO livraison (ID_COMMANDE, ID_LIVREUR, STATUT_LIVRAISON) VALUES (?, ?, 'en attente')")
                 ->execute([$id_commande, $id_livreur]);
         }
-        // Mettre à jour le statut de la commande à "en cours" (et non "en livraison")
+        
         $pdo->prepare("UPDATE commande SET STATUT_COMMANDE = 'en cours' WHERE ID_COMMANDE = ? AND STATUT_COMMANDE NOT IN ('livré','annulé')")
             ->execute([$id_commande]);
         $message = "Livreur assigné avec succès.";
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'assig
     }
 }
 
-// ── SUPPRIMER COMMANDE ──
+
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $pdo->prepare("DELETE FROM contient  WHERE ID_COMMANDE = ?")->execute([$id]);
@@ -53,7 +53,7 @@ if (isset($_GET['msg'])) {
     $messageType = "success";
 }
 
-// ── CHARGER COMMANDES (sans filtre pour la pagination) ──
+
 $allCommandes = $pdo->query("
     SELECT c.*,
            CONCAT(cl.PRENOM_CLIENT,' ',cl.NOM_CLIENT)    AS NOM_CLIENT,
@@ -73,10 +73,10 @@ $allCommandes = $pdo->query("
     ORDER BY c.DATE_COMMANDE DESC
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-// ── LIVREURS DISPONIBLES ──
+
 $livreurs = $pdo->query("SELECT ID_LIVREUR, PRENOM_LIVREUR, NOM_LIVREUR FROM livreur ORDER BY NOM_LIVREUR")->fetchAll(PDO::FETCH_ASSOC);
 
-// ── DETAIL COMMANDE ──
+
 $detail = null;
 $lignes = [];
 if (isset($_GET['detail'])) {
@@ -114,7 +114,7 @@ if (isset($_GET['detail'])) {
     $lignes = $sl->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// ── HELPER : badge statut (sans "en livraison") ──
+
 function statutBadge(string $s): array {
     $s = mb_strtolower(trim($s));
     return match(true) {
@@ -263,9 +263,9 @@ function statutBadge(string $s): array {
             <p class="section-lbl"><i class="fas fa-truck"></i> Livraison</p>
             <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:22px; align-items:center;">
                 <div><span style="font-size:11px;font-weight:700;text-transform:uppercase;color:#999;">Statut :</span> <span class="badge <?= $dsc ?>"><i class="fas <?= $dicon ?>"></i> <?= $dlbl ?></span> <span class="info-note"><i class="fas fa-info-circle"></i> Mis à jour par le livreur</span></div>
-                <form method="POST" style="display:flex; align-items:center; gap:8px;">
+                <form method="POST" style="display:flex; align-items:center; gap:8px;" onsubmit="var s=this.querySelector('[name=id_livreur]'); if(!s.value){showToast('Veuillez choisir un livreur.','error'); return false;}">
                     <input type="hidden" name="action" value="assign_livreur"><input type="hidden" name="id_commande" value="<?= $detail['ID_COMMANDE'] ?>">
-                    <select name="id_livreur" class="livreur-select"><?php foreach($livreurs as $liv): ?><option value="<?= $liv['ID_LIVREUR'] ?>" <?= ($detail['LIV_ID_LIVREUR'] ?? 0) == $liv['ID_LIVREUR'] ? 'selected' : '' ?>><?= htmlspecialchars($liv['PRENOM_LIVREUR'].' '.$liv['NOM_LIVREUR']) ?></option><?php endforeach; ?></select>
+                    <select name="id_livreur" class="livreur-select"><option value="">— Choisir —</option><?php foreach($livreurs as $liv): ?><option value="<?= $liv['ID_LIVREUR'] ?>" <?= ($detail['LIV_ID_LIVREUR'] ?? 0) == $liv['ID_LIVREUR'] ? 'selected' : '' ?>><?= htmlspecialchars($liv['PRENOM_LIVREUR'].' '.$liv['NOM_LIVREUR']) ?></option><?php endforeach; ?></select>
                     <button type="submit" class="btn btn-black btn-sm"><i class="fas fa-motorcycle"></i> Assigner</button>
                 </form>
             </div>
@@ -292,7 +292,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (el) showToast(el.dataset.msg, el.dataset.type);
     renderPage();
 });
-// Pagination (20 par page)
+
 const ROWS_PER_PAGE = 20;
 let currentPage = 1;
 function renderPage() {

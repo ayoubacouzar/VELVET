@@ -1,8 +1,6 @@
 <?php
-// ════════════════════════════════════════════════════════════════
-//  recherche.php — Page résultats de recherche
-//  Recherche dans : NOM_PRODUIT, NOM_SOUS_CATEGORIE, DESCRIPTION
-// ════════════════════════════════════════════════════════════════
+
+
 session_start();
 require_once 'db.php';
 
@@ -60,7 +58,7 @@ if ($q !== '') {
     }
 }
 
-// ── Favoris du client connecté ────────────────────────────────
+
 $favorisIds = [];
 if (!empty($_SESSION['client_id'])) {
     $s = $pdo->prepare("SELECT ID_PRODUIT FROM aime WHERE ID_CLIENT = ?");
@@ -84,7 +82,7 @@ function getImg(array $p): string {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="CSS/style.css">
     <style>
-        /* ── Page header ── */
+        
         .search-header {
             background: #0a0a0a;
             padding: 60px 0 45px;
@@ -116,7 +114,7 @@ function getImg(array $p): string {
             color: rgba(255,255,255,0.3);
         }
 
-        /* ── Inline search bar ── */
+        
         .search-bar-inline {
             background: #fff;
             border-bottom: 1px solid #eee;
@@ -155,7 +153,7 @@ function getImg(array $p): string {
         }
         .search-bar-form button:hover { background: #222; }
 
-        /* ── Sort bar ── */
+        
         .sort-bar {
             display: flex;
             align-items: center;
@@ -183,7 +181,7 @@ function getImg(array $p): string {
             color: #333;
         }
 
-        /* ── Product cards ── */
+        
         .prod-card {
             background: #fff;
             border-radius: 14px;
@@ -258,14 +256,14 @@ function getImg(array $p): string {
         .btn-cart:hover { background: #222; }
         .btn-cart:disabled { background: #ccc; cursor: not-allowed; }
 
-        /* ── Animations ── */
+        
         .prod-col {
             opacity: 0; transform: translateY(20px);
             animation: fadeUp 0.45s ease forwards;
         }
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* ── Empty ── */
+        
         .empty-search { text-align: center; padding: 80px 0; }
         .empty-search i { font-size: 3rem; color: #ddd; display: block; margin-bottom: 20px; }
         .empty-search h3 { font-family: 'Anton', sans-serif; font-size: 1.4rem; margin-bottom: 8px; text-transform: uppercase; }
@@ -278,7 +276,7 @@ function getImg(array $p): string {
         }
         .suggestion-tag:hover { background: #000; color: #fff; border-color: #000; }
 
-        /* ── Toast ── */
+        
         #toast { position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
                  background:#000; color:#fff; padding:12px 24px; border-radius:40px;
                  font-size:13px; font-weight:600; z-index:9999;
@@ -292,7 +290,7 @@ function getImg(array $p): string {
 
 <?php $base = ''; include 'includes/navbar.php'; ?>
 
-<!-- ════ HEADER ════ -->
+
 <div class="search-header">
     <p class="search-header-label">Résultats de recherche</p>
     <?php if ($q): ?>
@@ -307,7 +305,7 @@ function getImg(array $p): string {
     <?php endif; ?>
 </div>
 
-<!-- ════ BARRE DE RECHERCHE ════ -->
+
 <div class="search-bar-inline">
     <div class="container">
         <form class="search-bar-form" action="recherche.php" method="GET">
@@ -321,11 +319,11 @@ function getImg(array $p): string {
     </div>
 </div>
 
-<!-- ════ CONTENU ════ -->
+
 <div class="container py-4 pb-5">
 
     <?php if ($q === ''): ?>
-    <!-- Aucune recherche encore -->
+    
     <div class="empty-search">
         <i class="fas fa-search"></i>
         <h3>Que cherchez-vous ?</h3>
@@ -343,7 +341,7 @@ function getImg(array $p): string {
     </div>
 
     <?php elseif (empty($produits)): ?>
-    <!-- Aucun résultat -->
+    
     <div class="empty-search">
         <i class="fas fa-box-open"></i>
         <h3>Aucun résultat</h3>
@@ -362,7 +360,7 @@ function getImg(array $p): string {
     </div>
 
     <?php else: ?>
-    <!-- Résultats -->
+    
     <div class="sort-bar">
         <div class="sort-bar-left">
             <strong><?= $total ?></strong> article<?= $total > 1 ? 's' : '' ?> pour
@@ -383,7 +381,7 @@ function getImg(array $p): string {
             $stock = (int)$p['stock_total'];
             $pid   = $p['ID_PRODUIT'];
             $isFav = isset($favorisIds[$pid]);
-            // Fix image path
+            
             $imgSrc = $img ? $img : '';
             if ($imgSrc && !preg_match('/^(https?:\/\/|\/\/|\/)/i', $imgSrc)) $imgSrc = $imgSrc;
         ?>
@@ -410,7 +408,7 @@ function getImg(array $p): string {
                         <span class="badge-categorie"><?= htmlspecialchars(ucfirst(strtolower($p['NOM_SOUS_CATEGORIE']))) ?></span>
                     <?php endif; ?>
 
-                    <!-- Favoris -->
+                    
                     <button class="btn-wish <?= $isFav ? 'active' : '' ?>"
                             onclick="toggleFav(<?= $pid ?>, this)"
                             title="Favoris">
@@ -447,7 +445,7 @@ function getImg(array $p): string {
         <?php endforeach; ?>
     </div>
 
-    <!-- Pagination -->
+    
     <?php if ($totalPages > 1): ?>
     <div class="velvet-pagination" style="margin-top:40px;">
         <?php if ($page > 1): ?>
@@ -475,7 +473,7 @@ function applySort(val) {
     url.searchParams.set('sort', val);
     window.location.href = url.toString();
 }
-/* addToCart et toggleFav viennent de script.js via data-add-cart / data-toggle-fav */
+
 </script>
 </body>
 </html>

@@ -3,12 +3,12 @@ session_start();
 require_once __DIR__ . '/../db.php';
 $base = '../';
 
-// ── Category filter ──
-$filterCat = $_GET['cat'] ?? 'all'; // all, homme, femme
+
+$filterCat = $_GET['cat'] ?? 'all'; 
 $validCats = ['all', 'homme', 'femme'];
 if (!in_array($filterCat, $validCats)) $filterCat = 'all';
 
-// ── Sort ──
+
 $sortAllowed = [
     'date_desc' => 'p.ID_PRODUIT DESC',
     'prix_asc'  => 'COALESCE(NULLIF(p.PRIX_PROMO,0)*p.EN_PROMO, p.PRIX) ASC',
@@ -18,7 +18,7 @@ $sortAllowed = [
 $sort    = array_key_exists($_GET['sort'] ?? '', $sortAllowed) ? $_GET['sort'] : 'date_desc';
 $orderBy = $sortAllowed[$sort];
 
-// ── Build WHERE clause for category ──
+
 $where  = [];
 $params = [];
 if ($filterCat === 'homme') {
@@ -28,7 +28,7 @@ if ($filterCat === 'homme') {
 }
 $whereSQL = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
 
-// ── Count total (capped at 20) ──
+
 $stmtCount = $pdo->prepare("
     SELECT COUNT(*) FROM produit p
     LEFT JOIN sous_categorie sc ON p.ID_SOUS_CATEGORIE = sc.ID_SOUS_CATEGORIE
@@ -37,16 +37,16 @@ $stmtCount = $pdo->prepare("
 ");
 $stmtCount->execute($params);
 $totalReal  = (int)$stmtCount->fetchColumn();
-$totalMax   = min(20, $totalReal); // max 20 products shown
+$totalMax   = min(20, $totalReal); 
 
-// ── Pagination: 10 per page ──
+
 $perPage    = 10;
 $totalPages = max(1, ceil($totalMax / $perPage));
 $page       = max(1, min((int)($_GET['page'] ?? 1), $totalPages));
 $offset     = ($page - 1) * $perPage;
 $limit      = min($perPage, $totalMax - $offset);
 
-// ── Fetch products ──
+
 $stmt = $pdo->prepare("
     SELECT p.*, sc.NOM_SOUS_CATEGORIE, c.NOM_CATEGORIE,
            COALESCE(NULLIF(p.PRIX_PROMO,0)*p.EN_PROMO, p.PRIX) AS prix_final,
@@ -61,7 +61,7 @@ $stmt = $pdo->prepare("
 $stmt->execute($params);
 $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// ── Category counts for filter badges ──
+
 $countAll = min(20, (int)$pdo->query("SELECT COUNT(*) FROM produit")->fetchColumn());
 $countH   = min(20, (int)$pdo->query("
     SELECT COUNT(*) FROM produit p
@@ -76,7 +76,7 @@ $countF   = min(20, (int)$pdo->query("
     WHERE LOWER(c.NOM_CATEGORIE) = 'femmes'
 ")->fetchColumn());
 
-// ── Build URL helper ──
+
 function buildUrl($catVal, $sortVal, $pageVal = 1) {
     $params = [];
     if ($catVal !== 'all') $params['cat'] = $catVal;
@@ -97,7 +97,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../CSS/style.css">
     <style>
-        /* ── Hero ── */
+        
         .na-hero {
             position: relative;
             background: #0a0a0a;
@@ -148,7 +148,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
             margin: 18px auto;
         }
 
-        /* ── Breadcrumb ── */
+        
         .breadcrumb-bar {
             background: #f7f5f2;
             padding: 11px 0;
@@ -159,7 +159,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
         .breadcrumb-bar span { color:#000; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; font-weight:600; }
         .breadcrumb-bar i.sep { font-size:8px; color:#ccc; margin: 0 8px; }
 
-        /* ── Filter bar ── */
+        
         .filter-bar {
             background: #fff;
             border-bottom: 1px solid #eee;
@@ -234,10 +234,10 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
         .sort-select:focus { border-color: #000; }
         .results-count { font-size: 11px; color: #aaa; white-space: nowrap; margin-left: 8px; }
 
-        /* ── Content ── */
+        
         .na-wrap { padding: 50px 0 80px; }
 
-        /* ── Product cards ── */
+        
         .prod-card {
             background: #fff;
             border-radius: 14px;
@@ -260,7 +260,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
             color: #ccc; font-size: 2.5rem;
         }
 
-        /* Badges */
+        
         .badge-nouveau {
             position: absolute; top: 12px; left: 12px;
             background: #000; color: #fff;
@@ -289,7 +289,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
             padding: 3px 9px; border-radius: 12px; z-index: 2;
         }
 
-        /* Wishlist */
+        
         .btn-wish {
             position: absolute; bottom: 12px; right: 12px;
             width: 36px; height: 36px;
@@ -303,7 +303,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
         .btn-wish:hover i { color: #fff; }
         .btn-wish.active i { color: #e63946; font-weight: 900; }
 
-        /* Card body */
+        
         .prod-body { padding: 14px 16px 16px; }
         .prod-sc { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #bbb; margin-bottom: 3px; }
         .prod-name { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 8px; line-height: 1.3; }
@@ -312,7 +312,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
         .price-final.sale { color: #e63946; }
         .price-old { font-size: 11px; color: #bbb; text-decoration: line-through; }
 
-        /* Cart button */
+        
         .btn-cart {
             display: inline-flex; align-items: center; justify-content: center;
             width: 38px; height: 38px;
@@ -325,7 +325,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
         .btn-cart:disabled { background: #ccc; cursor: not-allowed; transform: none; }
         .btn-cart.added { background: #27ae60; }
 
-        /* Animation */
+        
         .prod-col {
             opacity: 0;
             transform: translateY(22px);
@@ -333,12 +333,12 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
         }
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* ── Empty state ── */
+        
         .na-empty { text-align: center; padding: 80px 20px; color: #bbb; }
         .na-empty i { font-size: 3rem; margin-bottom: 16px; display: block; }
         .na-empty p { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* ── Pagination ── */
+        
         .na-pager {
             display: flex;
             justify-content: center;
@@ -363,7 +363,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
         .na-pager span.cur { background: #111; color: #fff; border-color: #111; }
         .na-pager .dots { border: none; color: #aaa; width: auto; }
 
-        /* Toast */
+        
         #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
                  background: #000; color: #fff; padding: 12px 24px; border-radius: 40px;
                  font-size: 13px; font-weight: 600; z-index: 9999;
@@ -378,7 +378,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
 
 <?php include '../includes/navbar.php'; ?>
 
-<!-- ════ HERO ════ -->
+
 <div class="na-hero">
     <div class="na-hero-bg">NOUVEAUTÉS</div>
     <div class="container position-relative">
@@ -389,7 +389,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
     </div>
 </div>
 
-<!-- ════ BREADCRUMB ════ -->
+
 <div class="breadcrumb-bar">
     <div class="container">
         <a href="../index.php">Accueil</a>
@@ -398,7 +398,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
     </div>
 </div>
 
-<!-- ════ FILTER BAR ════ -->
+
 <div class="filter-bar">
     <div class="container">
         <div class="filter-inner">
@@ -425,7 +425,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
     </div>
 </div>
 
-<!-- ════ PRODUCTS ════ -->
+
 <section class="na-wrap">
     <div class="container">
         <?php if (empty($produits)): ?>
@@ -457,7 +457,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
                         <?php if ($isPromo): ?>
                             <span class="badge-promo">Promo</span>
                         <?php else: ?>
-                            <span class="badge-nouveau">New</span>
+                            <span class="badge-nouveau">Nouveau</span>
                         <?php endif; ?>
                         <?php if ($stock <= 0): ?>
                             <span class="badge-epuise">Épuisé</span>
@@ -495,7 +495,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
             <?php endforeach; ?>
         </div>
 
-        <!-- ── Pagination ── -->
+        
         <?php if ($totalPages > 1): ?>
         <nav class="na-pager">
             <?php if ($page > 1): ?>

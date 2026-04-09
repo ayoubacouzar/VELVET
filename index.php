@@ -1,7 +1,8 @@
 <?php
+session_start();
 require_once 'db.php';
 
-// ── Traitement formulaire contact ────────────────────────────────
+
 $form_success = false;
 $form_error   = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST' &&
@@ -16,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' &&
     }
 }
 
-// ── 6 derniers produits avec image ──────────────────────────────
+
 try {
     $stmt = $pdo->query("
         SELECT p.*, sc.NOM_SOUS_CATEGORIE
@@ -30,17 +31,17 @@ try {
     $products = [];
 }
 
-// ── Total produits ───────────────────────────────────────────────
+
 try {
     $total_products = $pdo->query("SELECT COUNT(*) FROM produit")->fetchColumn();
 } catch (PDOException $e) {
     $total_products = count($products);
 }
 
-// ── Calcul correct des articles restants ─────────────────────────
+
 $restants = max(0, $total_products - count($products));
 
-// ── Tailles + stock depuis modele_produit ────────────────────────
+
 $tailles_par_produit = [];
 if (!empty($products)) {
     $ids          = array_column($products, 'ID_PRODUIT');
@@ -70,6 +71,7 @@ function getImage(array $p): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="images/VELVET_LOGO_blanc.png">
     <title>Velvet Fashion — Mode Premium au Maroc</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
@@ -78,7 +80,7 @@ function getImage(array $p): string {
     <link rel="stylesheet" href="CSS/Main.css">
 
     <style>
-        /* ── Bouton Voir Plus ── */
+        
         .btn-voir-plus {
             display: inline-flex; align-items: center; gap: 10px;
             background: transparent; color: #000;
@@ -99,7 +101,7 @@ function getImage(array $p): string {
         .btn-voir-plus i { transition: transform 0.4s ease; }
         .btn-voir-plus:hover i { transform: translateX(4px); }
 
-        /* ── Sizes for homepage cards ── */
+        
         .sizes-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
         .sz {
             border: 1.5px solid #e0e0e0; border-radius: 5px;
@@ -112,7 +114,7 @@ function getImage(array $p): string {
         .sz-stock { font-size: 9px; color: #bbb; margin-bottom: 10px; }
         .sz-stock.low { color: #e63946; font-weight: 700; }
 
-        /* ── Nouvelles arrivées performance ── */
+        
         .prod-col { content-visibility: auto; contain-intrinsic-size: 0 500px; }
     </style>
 </head>
@@ -120,7 +122,7 @@ function getImage(array $p): string {
 
 <?php $base = ''; include 'includes/navbar.php'; ?>
 
-<!-- ════ HERO ════ -->
+
 <section class="hero-section">
     <div class="container">
         <div class="row align-items-center">
@@ -142,18 +144,17 @@ function getImage(array $p): string {
     </div>
 </section>
 
-<!-- ════ MARQUEE ════ -->
+
 <div class="marquee">
     <div class="marquee-track">
         <?php for ($i = 0; $i < 4; $i++): ?>
-            <span>✦ VELVET FASHION ✦</span>
             <span>✦ VELVET FASHION ✦</span>
             <span>✦ NEW COLLECTION ✦</span>
         <?php endfor; ?>
     </div>
 </div>
 
-<!-- ════ COLLECTIONS ════ -->
+
 <section class="collection-section" id="collection-section">
     <a href="client/collection-femme.php" class="collection-card women">
         <img class="col-img" src="https://i0.wp.com/malwinapersonalshopper.com/wp-content/uploads/2025/07/f99c532cf189d724b0552483f1f276f7.jpg?resize=736%2C917&ssl=1" alt="Femmes">
@@ -165,7 +166,7 @@ function getImage(array $p): string {
     </a>
 </section>
 
-<!-- ════ NOUVELLES ARRIVÉES ════ -->
+
 <section class="products-section container my-5 py-5" id="products-section">
     <div class="text-center mb-5">
         <h2 class="fw-bold display-5" style="font-family:'Anton';">NOUVELLES ARRIVÉES</h2>
@@ -277,7 +278,7 @@ function getImage(array $p): string {
     </div>
     <?php endif; ?>
 
-    <!-- Bouton Voir Plus -->
+    
     <?php if ($total_products > 6): ?>
     <div class="text-center mt-5">
         <a href="client/nouvelles-arrivees.php" class="btn-voir-plus">
@@ -292,7 +293,7 @@ function getImage(array $p): string {
 
 </section>
 
-<!-- ════ POURQUOI NOUS CHOISIR ════ -->
+
 <section class="py-5" style="background-color:#f8f9fa;">
     <div class="container">
         <div class="text-center mb-5">
@@ -333,7 +334,7 @@ Plus que de la mode — c'est une expérience.                </span>
 <script src="JS/Main.js"></script>
 <script src="JS/script.js"></script>
 <script>
-// ── Sélection taille homepage ──
+
 function selectSizeHome(el, prodId) {
     if (el.classList.contains('sz-out')) return;
     const wrap = document.getElementById('sizes-' + prodId);

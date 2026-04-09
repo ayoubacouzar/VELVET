@@ -25,7 +25,7 @@ $stmt->execute([$clientId]);
 $favoris = $stmt->fetchAll();
 $count   = count($favoris);
 
-// Tailles par produit
+
 $taillesParProduit = [];
 if (!empty($favoris)) {
     $ids = array_column($favoris, 'ID_PRODUIT');
@@ -58,7 +58,7 @@ function getFavImg(array $p): string {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="../CSS/style.css">
     <style>
-        /* ── Hero (collection-homme style) ── */
+        
         .fav-hero {
             position: relative;
             background: #0a0a0a;
@@ -109,7 +109,7 @@ function getFavImg(array $p): string {
             margin: 18px auto;
         }
 
-        /* ── Breadcrumb ── */
+        
         .breadcrumb-bar {
             background: #f7f5f2;
             padding: 11px 0;
@@ -120,10 +120,10 @@ function getFavImg(array $p): string {
         .breadcrumb-bar span { color:#000; font-size:11px; letter-spacing:1.5px; text-transform:uppercase; font-weight:600; }
         .breadcrumb-bar i { font-size:8px; color:#ccc; margin: 0 8px; }
 
-        /* ── Content ── */
+        
         .fav-wrap { padding: 50px 0 80px; }
 
-        /* ── Product cards (same as collection-homme) ── */
+        
         .prod-card {
             background: #fff;
             border-radius: 14px;
@@ -146,7 +146,7 @@ function getFavImg(array $p): string {
             color: #ccc; font-size: 2.5rem;
         }
 
-        /* Badges */
+        
         .badge-promo {
             position: absolute; top: 12px; left: 12px;
             background: #e63946; color: #fff;
@@ -161,7 +161,7 @@ function getFavImg(array $p): string {
             padding: 4px 10px; border-radius: 20px; z-index: 2;
         }
 
-        /* Remove (heart) button — replaces wishlist */
+        
         .btn-wish-remove {
             position: absolute; bottom: 12px; right: 12px;
             width: 36px; height: 36px;
@@ -174,7 +174,7 @@ function getFavImg(array $p): string {
         .btn-wish-remove:hover { background: #e63946; }
         .btn-wish-remove:hover i { color: #fff; }
 
-        /* Card body */
+        
         .prod-body { padding: 14px 16px 16px; }
         .prod-sc { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #bbb; margin-bottom: 3px; }
         .prod-name { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 8px; line-height: 1.3; }
@@ -183,7 +183,7 @@ function getFavImg(array $p): string {
         .price-final.sale { color: #e63946; }
         .price-old { font-size: 11px; color: #bbb; text-decoration: line-through; }
 
-        /* Tailles */
+        
         .sizes-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
         .sz {
             border: 1.5px solid #e0e0e0;
@@ -202,7 +202,7 @@ function getFavImg(array $p): string {
         .sz-stock { font-size: 9px; color: #bbb; margin-bottom: 10px; }
         .sz-stock.low { color: #e63946; font-weight: 700; }
 
-        /* Cart button */
+        
         .btn-cart {
             display: inline-flex; align-items: center; justify-content: center;
             width: 38px; height: 38px;
@@ -215,7 +215,7 @@ function getFavImg(array $p): string {
         .btn-cart:disabled { background: #ccc; cursor: not-allowed; transform: none; }
         .btn-cart.added { background: #27ae60; }
 
-        /* Animation */
+        
         .prod-col {
             opacity: 0;
             transform: translateY(22px);
@@ -223,7 +223,7 @@ function getFavImg(array $p): string {
         }
         @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* ── Empty state ── */
+        
         .fav-empty {
             text-align: center;
             padding: 100px 20px;
@@ -254,7 +254,7 @@ function getFavImg(array $p): string {
         }
         .btn-shop:hover { background: #333; color: #fff; }
 
-        /* Removing animation */
+        
         .prod-col.removing {
             animation: cardOut 0.4s ease forwards;
         }
@@ -262,7 +262,7 @@ function getFavImg(array $p): string {
             to { opacity: 0; transform: scale(0.9) translateY(10px); }
         }
 
-        /* Toast */
+        
         #toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
                  background: #000; color: #fff; padding: 12px 24px; border-radius: 40px;
                  font-size: 13px; font-weight: 600; z-index: 9999;
@@ -278,7 +278,7 @@ function getFavImg(array $p): string {
 
 <?php $base = '../'; include __DIR__ . '/../includes/navbar.php'; ?>
 
-<!-- ════ HERO ════ -->
+
 <div class="fav-hero">
     <div class="fav-hero-bg">FAVORIS</div>
     <div class="container position-relative">
@@ -289,7 +289,7 @@ function getFavImg(array $p): string {
     </div>
 </div>
 
-<!-- ════ BREADCRUMB ════ -->
+
 <div class="breadcrumb-bar">
     <div class="container">
         <a href="index.php">Mon compte</a>
@@ -298,7 +298,7 @@ function getFavImg(array $p): string {
     </div>
 </div>
 
-<!-- ════ CONTENT ════ -->
+
 <section class="fav-wrap">
     <div class="container">
 
@@ -326,7 +326,7 @@ function getFavImg(array $p): string {
             <div class="col-6 col-md-4 col-lg-3 prod-col" id="fav-col-<?= $fav['ID_PRODUIT'] ?>" style="animation-delay: <?= $i * 0.045 ?>s;">
                 <div class="prod-card">
 
-                    <!-- Image -->
+                    
                     <div class="prod-img-wrap">
                         <a href="produit.php?id=<?= $fav['ID_PRODUIT'] ?>">
                             <?php if ($img): ?>
@@ -353,7 +353,7 @@ function getFavImg(array $p): string {
                         </button>
                     </div>
 
-                    <!-- Info -->
+                    
                     <div class="prod-body">
                         <?php if ($fav['NOM_SOUS_CATEGORIE']): ?>
                             <p class="prod-sc"><?= htmlspecialchars($fav['NOM_SOUS_CATEGORIE']) ?></p>
@@ -370,7 +370,7 @@ function getFavImg(array $p): string {
                             <?php endif; ?>
                         </div>
 
-                        <!-- Tailles -->
+                        
                         <?php if (!empty($tailles)): ?>
                         <div class="sizes-row" id="sizes-<?= $fav['ID_PRODUIT'] ?>">
                             <?php foreach ($tailles as $t):
@@ -401,7 +401,7 @@ function getFavImg(array $p): string {
                         </p>
                         <?php endif; ?>
 
-                        <!-- Cart button -->
+                        
                         <button class="btn-cart"
                                 id="cartbtn-<?= $fav['ID_PRODUIT'] ?>"
                                 data-add-cart="<?= $fav['ID_PRODUIT'] ?>"
@@ -425,7 +425,7 @@ function getFavImg(array $p): string {
 <div id="toast" class="toast-msg"></div>
 <script src="../JS/script.js"></script>
 <script>
-// ── Remove favorite ──
+
 function removeFav(prodId) {
     const col = document.getElementById('fav-col-' + prodId);
     if (col) col.classList.add('removing');
@@ -455,7 +455,7 @@ function removeFav(prodId) {
         });
 }
 
-// ── Size selection ──
+
 function selectSize(el, prodId) {
     if (el.classList.contains('sz-out')) return;
     const wrap = document.getElementById('sizes-' + prodId);

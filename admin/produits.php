@@ -6,7 +6,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 $message = "";
 $messageType = "";
 
-// ── UPLOAD IMAGE ──────────────────────────────────────────
+
 function uploadImage($file, $fieldName) {
     if (!isset($file[$fieldName]) || $file[$fieldName]['error'] !== UPLOAD_ERR_OK) return null;
 
@@ -28,7 +28,7 @@ function uploadImage($file, $fieldName) {
     return "images/" . $filename;
 }
 
-// ── SUPPRIMER ─────────────────────────────────────────────
+
 if (isset($_GET['delete'])) {
     $id = (int)$_GET['delete'];
     $pdo->prepare("DELETE FROM modele_produit WHERE ID_PRODUIT = ?")->execute([$id]);
@@ -39,7 +39,7 @@ if (isset($_GET['delete'])) {
     exit;
 }
 
-// ── AJOUTER ───────────────────────────────────────────────
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'add') {
     $nom         = trim($_POST['nom']);
     $desc        = trim($_POST['description']);
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $prix_promo  = $en_promo ? (float)$_POST['prix_promo'] : null;
     $date        = date('Y-m-d');
 
-    // Validation des prix (pas de 0 ou négatif)
+    
     if ($prix <= 0) {
         $message = "Le prix doit être supérieur à 0.";
         $messageType = "error";
@@ -70,12 +70,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             $stmt->execute([$id_sc, $nom, $img1, $img2, $img3, $desc, $prix, $en_promo, $prix_promo, $date]);
             $id_produit = $pdo->lastInsertId();
 
-            // Modèles (tailles/couleurs)
+            
             if (!empty($_POST['taille']) && is_array($_POST['taille'])) {
                 foreach ($_POST['taille'] as $i => $taille) {
                     $couleur  = $_POST['couleur'][$i]   ?? '';
                     $quantite = (int)($_POST['quantite'][$i] ?? 0);
-                    if (($taille || $couleur) && $quantite > 0) {  // quantite > 0 obligatoire
+                    if (($taille || $couleur) && $quantite > 0) {  
                         $pdo->prepare("INSERT INTO modele_produit (ID_PRODUIT, TAILLE, COULEUR, QUANTITE) VALUES (?,?,?,?)")
                             ->execute([$id_produit, $taille, $couleur, $quantite]);
                     }
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// ── MODIFIER ──────────────────────────────────────────────
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit') {
     $id          = (int)$_POST['id_produit'];
     $nom         = trim($_POST['nom']);
@@ -108,13 +108,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $message = "Le prix promotionnel doit être supérieur à 0.";
         $messageType = "error";
     } else {
-        // Keep old images unless new ones uploaded
+        
         $current = $pdo->prepare("SELECT IMAGE1,IMAGE2,IMAGE3 FROM produit WHERE ID_PRODUIT=?");
         $current->execute([$id]);
         $old = $current->fetch(PDO::FETCH_ASSOC);
 
         $img1 = uploadImage($_FILES, 'image1') ?? $old['IMAGE1'];
-        // Si l'image principale est supprimée (checkbox), on la supprime vraiment
+        
         if (isset($_POST['del_image1']) && $_POST['del_image1'] == '1') {
             $img1 = null;
         }
@@ -130,7 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $pdo->prepare("UPDATE produit SET ID_SOUS_CATEGORIE=?, NOM_PRODUIT=?, IMAGE1=?, IMAGE2=?, IMAGE3=?, DESCRIPTION=?, PRIX=?, EN_PROMO=?, PRIX_PROMO=? WHERE ID_PRODUIT=?")
             ->execute([$id_sc, $nom, $img1, $img2, $img3, $desc, $prix, $en_promo, $prix_promo, $id]);
 
-        // Update modèles
+        
         $pdo->prepare("DELETE FROM modele_produit WHERE ID_PRODUIT=?")->execute([$id]);
         if (!empty($_POST['taille']) && is_array($_POST['taille'])) {
             foreach ($_POST['taille'] as $i => $taille) {
@@ -152,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// ── CHARGER DONNÉES ───────────────────────────────────────
+
 $produits = $pdo->query("
     SELECT p.*, COALESCE(sc.NOM_SOUS_CATEGORIE,'—') as NOM_SOUS_CATEGORIE, COALESCE(c.NOM_CATEGORIE,'—') as NOM_CATEGORIE
     FROM produit p
@@ -172,7 +172,7 @@ $categories = $pdo->query("
     SELECT ID_CATEGORIE, NOM_CATEGORIE FROM categorie ORDER BY NOM_CATEGORIE
 ")->fetchAll(PDO::FETCH_ASSOC);
 
-// Charger modèles pour édition
+
 $editProduit = null;
 $editModeles = [];
 if (isset($_GET['edit'])) {
@@ -196,7 +196,7 @@ if (isset($_GET['edit'])) {
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../CSS/style_admin.css">
     <style>
-        /* ── TABLE ── */
+        
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
         thead tr { background: #000; color: #fff; }
@@ -221,7 +221,7 @@ if (isset($_GET['edit'])) {
         .btn-del:hover { background:#ffd5d5; }
         .btn-sm { padding:5px 10px; font-size:12px; }
 
-        /* ── FORM ── */
+        
         .form-card { background:#fff; border-radius:12px; padding:28px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom:24px; }
         .form-card h3 { font-family:'Anton',sans-serif; font-size:18px; margin-bottom:20px; display:flex; align-items:center; gap:8px; }
         .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
@@ -238,29 +238,29 @@ if (isset($_GET['edit'])) {
         .checkbox-row { display:flex; align-items:center; gap:10px; }
         .checkbox-row input[type=checkbox] { width:18px; height:18px; cursor:pointer; }
 
-        /* ── MODÈLES ── */
+        
         .modele-row { display:grid; grid-template-columns:1fr 1fr 80px 36px; gap:10px; align-items:center; margin-bottom:10px; }
         .btn-remove-modele { background:#fff0f0; border:none; color:#c0392b; border-radius:6px; padding:6px 10px; cursor:pointer; font-size:14px; }
 
-        /* ── ALERT (kept for compatibility, hidden via PHP now) ── */
+        
         .alert { display:none; }
 
-        /* ── CATEGORY HEADER ROW ── */
+        
         .cat-header-row td { background:#f5f5f5; }
 
-        /* ── SEARCH BAR ── */
+        
         .toolbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; gap:12px; flex-wrap:wrap; }
         .search-box { position:relative; flex:1; max-width:300px; }
         .search-box input { padding-left:36px; }
         .search-box i { position:absolute; left:11px; top:50%; transform:translateY(-50%); color:#aaa; }
 
-        /* ── MODAL OVERLAY ── */
+        
         .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:200; align-items:center; justify-content:center; }
         .modal-overlay.open { display:flex; }
         .modal { background:#fff; border-radius:14px; padding:32px; width:90%; max-width:700px; max-height:90vh; overflow-y:auto; position:relative; }
         .modal-close { position:absolute; top:14px; right:18px; background:none; border:none; font-size:22px; cursor:pointer; color:#888; }
 
-        /* ── Image wrapper with remove button ── */
+        
         .image-input-wrapper { position: relative; display: inline-block; width: 100%; }
         .image-input-wrapper input { width: calc(100% - 32px); }
         .image-remove-btn {
@@ -280,7 +280,7 @@ if (isset($_GET['edit'])) {
 <body>
 <div class="container">
 
-    <!-- SIDEBAR -->
+    
     <div class="sidebar">
         <div class="logo-section"><img src="../images/logo2.png" alt="Logo"></div>
         <ul class="menu">
@@ -296,7 +296,7 @@ if (isset($_GET['edit'])) {
         </ul>
     </div>
 
-    <!-- MAIN -->
+    
     <div class="main-content">
         <h2>Produits</h2>
 
@@ -304,7 +304,7 @@ if (isset($_GET['edit'])) {
         <div id="phpToast" data-msg="<?= htmlspecialchars($_GET['msg']) ?>" data-type="<?= htmlspecialchars($_GET['type'] ?? 'success') ?>"></div>
         <?php endif; ?>
 
-        <!-- ── TOOLBAR ── -->
+        
         <div class="toolbar">
             <div class="search-box">
                 <i class="fas fa-search"></i>
@@ -315,7 +315,7 @@ if (isset($_GET['edit'])) {
             </button>
         </div>
 
-        <!-- ── TABLE ── -->
+        
         <div class="form-card" style="padding:0; overflow:hidden;">
             <div class="table-wrap">
                 <table id="prodTable">
@@ -334,13 +334,13 @@ if (isset($_GET['edit'])) {
                          <td colspan="6" style="text-align:center;color:#aaa;padding:40px;">Aucun produit pour l'instant.</td>
                     <?php else: ?>
                     <?php
-                    // Group products by category
+                    
                     $grouped = [];
                     foreach($produits as $p) {
                         $cat = $p['NOM_CATEGORIE'] ?? '—';
                         $grouped[$cat][] = $p;
                     }
-                    // Sort: Femmes first, then Hommes, then others
+                    
                     uksort($grouped, function($a, $b) {
                         $order = ['Femmes' => 0, 'Hommes' => 1];
                         $oa = $order[$a] ?? 99;
@@ -400,15 +400,13 @@ if (isset($_GET['edit'])) {
             </div>
         </div>
 
-        <!-- Pagination -->
+        
         <div id="paginationControls" style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:18px;flex-wrap:wrap;"></div>
 
-    </div><!-- /main-content -->
-</div><!-- /container -->
+    </div>
+</div>
 
-<!-- ══════════════════════════════════════════════════════ -->
-<!-- MODAL : AJOUTER -->
-<!-- ══════════════════════════════════════════════════════ -->
+
 <div class="modal-overlay" id="modalAdd">
     <div class="modal">
         <button class="modal-close" onclick="closeModal('modalAdd')"><i class="fas fa-times"></i></button>
@@ -455,7 +453,7 @@ if (isset($_GET['edit'])) {
                         <input type="file" name="image1" accept="image/*" required>
                     </div>
                 </div>
-                <!-- Images 2 & 3 hidden by default -->
+                
                 <div id="img2_wrap" style="display:none;">
                     <label>Image 2</label>
                     <div class="image-input-wrapper">
@@ -487,7 +485,7 @@ if (isset($_GET['edit'])) {
                 </div>
             </div>
 
-            <!-- Modèles -->
+            
             <div style="margin-top:22px;">
                 <label style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Stock — Tailles & Couleurs</label>
                 <div id="modeles_add" style="margin-top:10px;">
@@ -519,16 +517,14 @@ if (isset($_GET['edit'])) {
     </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════════ -->
-<!-- MODAL : MODIFIER (s'ouvre automatiquement si ?edit=X) -->
-<!-- ══════════════════════════════════════════════════════ -->
+
 <?php if($editProduit): ?>
 <div class="modal-overlay open" id="modalEdit">
     <div class="modal">
         <button class="modal-close" onclick="window.location='produits.php'"><i class="fas fa-times"></i></button>
         <h3 style="font-family:'Anton',sans-serif;font-size:20px;margin-bottom:22px;"><i class="fas fa-pen"></i> Modifier le produit</h3>
 
-        <form method="POST" enctype="multipart/form-data" id="formEdit">
+        <form method="POST" enctype="multipart/form-data" id="formEdit" novalidate>
             <input type="hidden" name="action" value="edit">
             <input type="hidden" name="id_produit" value="<?= $editProduit['ID_PRODUIT'] ?>">
             <div class="form-grid">
@@ -596,7 +592,7 @@ if (isset($_GET['edit'])) {
                 </div>
             </div>
 
-            <!-- Modèles existants -->
+            
             <div style="margin-top:22px;">
                 <label style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">Stock — Tailles & Couleurs</label>
                 <div id="modeles_edit" style="margin-top:10px;">
@@ -651,7 +647,7 @@ if (isset($_GET['edit'])) {
 <?php endif; ?>
 
 <script>
-// ── TOAST NOTIFICATION (en haut, 5 secondes) ─────────────
+
 function showToast(msg, type) {
     const toast = document.createElement('div');
     toast.textContent = msg;
@@ -676,16 +672,16 @@ function showToast(msg, type) {
         toast.style.opacity = '0';
         toast.style.transform = 'translateX(-50%) translateY(-20px)';
         setTimeout(() => toast.remove(), 350);
-    }, 5000); // 5 secondes
+    }, 5000); 
 }
 
-// Auto-show PHP toast
+
 window.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById('phpToast');
     if (el) showToast(el.dataset.msg, el.dataset.type);
 });
 
-// ── MODAL ─────────────────────────────────────────────────
+
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
@@ -698,12 +694,12 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
     });
 });
 
-// ── PROMO TOGGLE ──────────────────────────────────────────
+
 function togglePromo(checkbox, targetId) {
     document.getElementById(targetId).style.display = checkbox.checked ? 'block' : 'none';
 }
 
-// ── ADD EXTRA IMAGES (sequential) avec bouton supprimer ──
+
 let imagesAdded = 0;
 function addNextImage() {
     if (imagesAdded === 0) {
@@ -721,7 +717,7 @@ function removeImageInput(wrapId) {
         wrap.style.display = 'none';
         const input = wrap.querySelector('input[type="file"]');
         if (input) input.value = '';
-        // Re-allow adding image again if needed (optional)
+        
         if (wrapId === 'img3_wrap') {
             imagesAdded = 1;
             document.getElementById('addImgBtn').style.display = 'inline-flex';
@@ -732,7 +728,7 @@ function removeImageInput(wrapId) {
     }
 }
 
-// ── FILTER SOUS-CATEGORIES ────────────────────────────────
+
 function filterSousCats(catSelectId, scSelectId) {
     const catId = document.getElementById(catSelectId).value;
     const sc = document.getElementById(scSelectId);
@@ -746,7 +742,7 @@ function filterSousCats(catSelectId, scSelectId) {
     });
 }
 
-// ── ADD MODÈLE ROW (avec select pour taille) ──────────────
+
 function addModeleRow(containerId) {
     const container = document.getElementById(containerId);
     const div = document.createElement('div');
@@ -773,7 +769,7 @@ function removeRow(btn) {
     btn.closest('.modele-row').remove();
 }
 
-// ── FORM VALIDATION (custom toast errors) ─────────────────
+
 document.getElementById('formAdd')?.addEventListener('submit', function(e) {
     const fields = [
         { el: this.querySelector('[name="nom"]'), label: 'Nom du produit' },
@@ -792,7 +788,7 @@ document.getElementById('formAdd')?.addEventListener('submit', function(e) {
             return;
         }
     }
-    // Check prix > 0
+    
     const prix = parseFloat(this.querySelector('[name="prix"]').value);
     if (prix <= 0) {
         e.preventDefault();
@@ -808,7 +804,7 @@ document.getElementById('formAdd')?.addEventListener('submit', function(e) {
             return;
         }
     }
-    // Check taille/couleur rows
+    
     const tailles = this.querySelectorAll('[name="taille[]"]');
     const couleurs = this.querySelectorAll('[name="couleur[]"]');
     const qtys = this.querySelectorAll('[name="quantite[]"]');
@@ -819,8 +815,22 @@ document.getElementById('formAdd')?.addEventListener('submit', function(e) {
     }
 });
 
-// Validation pour le formulaire d'édition
+
 document.getElementById('formEdit')?.addEventListener('submit', function(e) {
+    const fields = [
+        { el: this.querySelector('[name="nom"]'), label: 'Nom du produit' },
+        { el: this.querySelector('[name="id_sous_categorie"]'), label: 'Sous-catégorie' },
+        { el: this.querySelector('[name="prix"]'), label: 'Prix' },
+    ];
+    for (const f of fields) {
+        if (!f.el) continue;
+        if (!f.el.value || (f.el.tagName==='SELECT' && f.el.value==='')) {
+            e.preventDefault();
+            f.el.focus();
+            showToast(`Champ obligatoire : ${f.label}`, 'error');
+            return;
+        }
+    }
     const prix = parseFloat(this.querySelector('[name="prix"]').value);
     if (prix <= 0) {
         e.preventDefault();
@@ -846,7 +856,7 @@ document.getElementById('formEdit')?.addEventListener('submit', function(e) {
     }
 });
 
-// ── PAGINATION (10 produits par page) ─────────────────────
+
 const ROWS_PER_PAGE = 10;
 let currentPage = 1;
 
@@ -872,7 +882,7 @@ function renderPage() {
     const prodRows = [...document.querySelectorAll('#prodTbody .prod-row')].filter(r => !r.dataset.searchHide);
     const catHeaders = [...document.querySelectorAll('#prodTbody .cat-header-row')];
 
-    // Hide all first
+    
     document.querySelectorAll('#prodTbody .prod-row, #prodTbody .cat-header-row').forEach(r => r.style.display='none');
 
     const total = prodRows.length;
@@ -882,16 +892,16 @@ function renderPage() {
     const start = (currentPage - 1) * ROWS_PER_PAGE;
     const pageRows = prodRows.slice(start, start + ROWS_PER_PAGE);
 
-    // Show page rows
+    
     pageRows.forEach(r => r.style.display = '');
 
-    // Show category headers if they have visible rows on this page
+    
     const catsOnPage = new Set(pageRows.map(r => r.dataset.cat));
     catHeaders.forEach(h => {
         if (catsOnPage.has(h.dataset.cat)) h.style.display = '';
     });
 
-    // Build pagination UI
+    
     const pc = document.getElementById('paginationControls');
     pc.innerHTML = '';
     if (totalPages <= 1) return;
@@ -913,12 +923,12 @@ function renderPage() {
     pc.appendChild(makeBtn('<i class="fas fa-chevron-right"></i>', currentPage+1, false, currentPage===totalPages));
 }
 
-// ── SEARCH ────────────────────────────────────────────────
+
 document.getElementById('searchInput').addEventListener('input', function() {
     applySearch(this.value.toLowerCase().trim());
 });
 
-// Init pagination on load
+
 window.addEventListener('DOMContentLoaded', renderPage);
 </script>
 </body>

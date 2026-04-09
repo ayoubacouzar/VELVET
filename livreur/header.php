@@ -1,5 +1,5 @@
 <?php
-// livreur/header.php
+
 if (session_status() == PHP_SESSION_NONE) session_start();
 
 if (!isset($_SESSION['livreur_id'])) {
@@ -38,7 +38,7 @@ if ($livreur_bdd) {
 
 $initiales = strtoupper(substr($livreur['prenom'],0,1) . substr($livreur['nom'],0,1));
 
-// ── Traitement mise à jour profil (POST) ──────────────────
+
 $profil_success = '';
 $profil_error   = '';
 
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
             $sql .= " WHERE ID_LIVREUR=:id";
             $conn->prepare($sql)->execute($params);
 
-            // Recharge session
+            
             $upd = $conn->prepare("SELECT * FROM livreur WHERE ID_LIVREUR=?");
             $upd->execute([$livreur['id']]);
             $upd = $upd->fetch(PDO::FETCH_ASSOC);
@@ -99,12 +99,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
 </head>
 <body>
 
-<!-- ══════════════════════════════════════
-     TOP BAR
-══════════════════════════════════════ -->
+
 <div class="lv-topbar">
 
-    <!-- Left: user dropdown -->
+    
     <div class="lv-topbar-side lv-topbar-left">
         <div class="lv-user-wrap" id="lvUserWrap">
             <button class="lv-user-btn" onclick="toggleLvDropdown(event)">
@@ -133,14 +131,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
         </div>
     </div>
 
-    <!-- Center: logo -->
+    
     <div class="lv-topbar-center">
         <a href="index.php" class="lv-logo-link">
             <img src="../images/velvet.png" alt="VELVET" class="lv-logo-img">
         </a>
     </div>
 
-    <!-- Right: status indicator (mirror left for centering) -->
+    
     <div class="lv-topbar-side lv-topbar-right">
         <span class="lv-status-pill <?= $livreur['statut'] ?>">
             <span class="lv-status-dot"></span>
@@ -150,13 +148,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
 
 </div>
 
-<!-- ══════════════════════════════════════
-     PROFILE MODAL (style client)
-══════════════════════════════════════ -->
+
 <div class="lv-modal-overlay" id="lvModalOverlay" onclick="closeLvModal()"></div>
 <div class="lv-modal-box" id="lvModalBox">
 
-    <!-- Tabs header -->
+    
     <div class="lv-profile-tabs">
         <button class="lv-profile-tab active" onclick="switchLvTab('info', this)">
             <i class="fas fa-user"></i> Mes informations
@@ -169,16 +165,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
         </button>
     </div>
 
-    <!-- TAB: Informations -->
+    
     <div id="lv-tab-info" class="lv-tab-content active">
         <form id="lvInfoForm" onsubmit="submitLvInfo(event)" novalidate>
             <input type="hidden" name="action" value="update_profil_livreur">
 
-            <!-- Alert zone -->
+            
             <div id="lvInfoAlert" class="lv-form-alert" style="display:none;margin:20px 32px 0;"></div>
 
             <div class="lv-modal-body">
-                <!-- Prénom + Nom readonly -->
+                
                 <div class="lv-modal-row">
                     <div class="lv-modal-field">
                         <label>Prénom</label>
@@ -191,13 +187,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
                                class="lv-input-readonly">
                     </div>
                 </div>
-                <!-- Email readonly -->
+                
                 <div class="lv-modal-field">
                     <label>E-mail</label>
                     <input type="email" value="<?= htmlspecialchars($livreur['email']) ?>" readonly
                            class="lv-input-readonly">
                 </div>
-                <!-- Téléphone -->
+                
                 <div class="lv-modal-field">
                     <label>Téléphone <span class="lv-req">*</span></label>
                     <input type="tel" name="telephone" id="lvTelInput"
@@ -207,14 +203,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
                         Format marocain (05 / 06 / 07 + 8 chiffres)
                     </small>
                 </div>
-                <!-- Zone -->
+                
                 <div class="lv-modal-field">
                     <label>Zone de livraison <span class="lv-req">*</span></label>
                     <input type="text" name="zone_livraison" id="lvZoneInput"
                            value="<?= htmlspecialchars($livreur['zone']) ?>"
                            placeholder="Ex : Hay Salam, Centre-ville..." required>
                 </div>
-                <!-- Statut -->
+                
                 <div class="lv-modal-field">
                     <label>Statut</label>
                     <select name="statut" id="lvStatutSelect" class="lv-modal-select">
@@ -225,7 +221,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
                 <p class="lv-required-note"><span class="lv-req">*</span> Champs obligatoires</p>
             </div>
 
-            <!-- Save bar -->
+            
             <div class="lv-save-bar">
                 <div class="lv-save-bar-info">
                     <i class="fas fa-info-circle"></i>
@@ -242,11 +238,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
         </form>
     </div>
 
-    <!-- TAB: Mot de passe -->
+    
     <div id="lv-tab-password" class="lv-tab-content">
         <form id="lvPwdForm" onsubmit="submitLvPassword(event)" novalidate>
             <input type="hidden" name="action" value="update_profil_livreur">
-            <!-- hidden fields to satisfy server validation -->
+            
             <input type="hidden" name="telephone" id="lvPwdTelHidden"
                    value="<?= htmlspecialchars($livreur['telephone']) ?>">
             <input type="hidden" name="zone_livraison" id="lvPwdZoneHidden"
@@ -254,11 +250,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
             <input type="hidden" name="statut" id="lvPwdStatutHidden"
                    value="<?= htmlspecialchars($livreur['statut']) ?>">
 
-            <!-- Alert zone -->
+            
             <div id="lvPwdAlert" class="lv-form-alert" style="display:none;margin:20px 32px 0;"></div>
 
             <div class="lv-modal-body">
-                <!-- Nouveau mot de passe -->
+                
                 <div class="lv-modal-field">
                     <label>Nouveau mot de passe <span class="lv-req">*</span></label>
                     <div class="lv-input-icon-wrap">
@@ -275,7 +271,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
                     </div>
                     <div class="lv-strength-label" id="lvStrengthLabel"></div>
                 </div>
-                <!-- Confirmer -->
+                
                 <div class="lv-modal-field">
                     <label>Confirmer le nouveau mot de passe <span class="lv-req">*</span></label>
                     <div class="lv-input-icon-wrap">
@@ -300,11 +296,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'updat
         </form>
     </div>
 
-</div><!-- /lv-modal-box -->
+</div>
 
-<!-- Toast -->
+
 <div id="lv-toast" class="lv-toast"></div>
-
 
 
 <div class="lv-page-wrapper">

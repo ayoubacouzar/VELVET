@@ -7,7 +7,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 $message = "";
 $messageType = "";
 
-// ── CRÉER UN LIVREUR ──
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add_livreur') {
     $nom     = trim($_POST['nom_livreur']     ?? '');
     $prenom  = trim($_POST['prenom_livreur']  ?? '');
@@ -40,19 +40,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add_l
     }
 }
 
-// ── SUPPRIMER LIVREUR ──
+
 if (isset($_GET['del_livreur'])) {
     $pdo->prepare("DELETE FROM livreur WHERE ID_LIVREUR = ?")->execute([(int)$_GET['del_livreur']]);
     $message = "Livreur supprimé."; $messageType = "success";
 }
 
-// ── SUPPRIMER CLIENT ──
+
 if (isset($_GET['del_client'])) {
     $pdo->prepare("DELETE FROM client WHERE ID_CLIENT = ?")->execute([(int)$_GET['del_client']]);
     $message = "Client supprimé."; $messageType = "success";
 }
 
-// ── CHARGER CLIENT DETAIL ──
+
 $clientDetail = null;
 $clientCommandes = [];
 if (isset($_GET['view_client'])) {
@@ -193,7 +193,7 @@ sort($quartiersOujda);
                 <div class="section-card" style="margin-bottom:20px;">
                     <div class="card-header"><h3><i class="fas fa-user-plus"></i> Nouveau livreur</h3></div>
                     <div class="card-form">
-                        <form method="post" id="formLivreur">
+                        <form method="post" id="formLivreur" novalidate>
                             <input type="hidden" name="action" value="add_livreur">
                             <div class="field-row">
                                 <div class="field-group"><label>Prénom *</label><input type="text" name="prenom_livreur" required></div>

@@ -1,5 +1,5 @@
 <?php
-// ─── profile_modal.php ────────────────────────────────────────────────
+
 $stmtPM = $pdo->prepare("SELECT * FROM client WHERE ID_CLIENT = ?");
 $stmtPM->execute([$clientId]);
 $pmClient = $stmtPM->fetch();
@@ -19,7 +19,7 @@ $pmClient = $stmtPM->fetch();
             </button>
         </div>
 
-        <!-- ── TAB: Mes informations ── -->
+        
         <div id="tab-info" class="profile-tab-content active">
             <form id="profileForm" onsubmit="submitProfile(event)" novalidate>
                 <div class="modal-body">
@@ -63,7 +63,7 @@ $pmClient = $stmtPM->fetch();
                     <p class="modal-required-note"><span class="req">*</span> Champs obligatoires</p>
                 </div>
 
-                <!-- Sauvegarder bar — only on Mes informations -->
+                
                 <div class="modal-save-bar">
                     <div class="modal-save-bar-info">
                         <i class="fas fa-info-circle"></i>
@@ -81,7 +81,7 @@ $pmClient = $stmtPM->fetch();
             </form>
         </div>
 
-        <!-- ── TAB: Mot de passe ── -->
+        
         <div id="tab-password" class="profile-tab-content">
             <form id="passwordForm" onsubmit="submitPasswordChange(event)" novalidate>
                 <div class="modal-body">
@@ -129,7 +129,7 @@ $pmClient = $stmtPM->fetch();
                         <div id="pwdMatchMsg" class="pwd-match-msg"></div>
                     </div>
                 </div>
-                <!-- Standard footer for password tab -->
+                
                 <div class="modal-footer">
                     <button type="button" class="btn-modal-cancel"
                             onclick="closeProfileModal()">Annuler</button>

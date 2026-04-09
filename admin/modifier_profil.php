@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password  = $_POST['password']             ?? '';
     $password2 = $_POST['password_confirm']     ?? '';
 
-    // Validations
+    
     if (empty($nom)) $errors['nom'] = "Le nom est obligatoire.";
     elseif (strlen($nom) < 2) $errors['nom'] = "Le nom doit contenir au moins 2 caractères.";
 
@@ -225,7 +225,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (el) showToast(el.dataset.msg, el.dataset.type);
     document.getElementById('pwdChecklist').style.display = 'none';
 
-    // ── Client-side validation ──
+    
     document.getElementById('profileForm').addEventListener('submit', function(e) {
         const prenom = this.querySelector('[name="prenom"]').value.trim();
         const nom    = this.querySelector('[name="nom"]').value.trim();
