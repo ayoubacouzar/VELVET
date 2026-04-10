@@ -15,7 +15,7 @@ if (!$panierId) {
 }
 
 $stmt = $pdo->prepare("
-    SELECT i.ID_PRODUIT, i.QUANTITE, p.PRIX, p.EN_PROMO, p.PRIX_PROMO
+    SELECT i.ID_PRODUIT, i.TAILLE, i.QUANTITE, p.PRIX, p.EN_PROMO, p.PRIX_PROMO
     FROM inclure i
     JOIN produit p ON i.ID_PRODUIT = p.ID_PRODUIT
     WHERE i.ID_PANIER = ?
@@ -49,17 +49,18 @@ try {
     $commandeId = $pdo->lastInsertId();
 
     foreach ($items as $it) {
-        $modele = $pdo->prepare("SELECT ID_MODELE FROM modele_produit WHERE ID_PRODUIT=? AND QUANTITE>0 ORDER BY ID_MODELE LIMIT 1");
-        $modele->execute([$it['ID_PRODUIT']]);
+        $modele = $pdo->prepare("SELECT ID_MODELE, QUANTITE FROM modele_produit WHERE ID_PRODUIT=? AND TAILLE=? AND QUANTITE>0 LIMIT 1");
+        $modele->execute([$it['ID_PRODUIT'], $it['TAILLE']]);
         $modele = $modele->fetch(PDO::FETCH_ASSOC);
         if (!$modele) continue;
 
+        $qteCmd = min($it['QUANTITE'], (int)$modele['QUANTITE']);
         $prix = ($it['EN_PROMO'] && $it['PRIX_PROMO']) ? $it['PRIX_PROMO'] : $it['PRIX'];
         $pdo->prepare("INSERT INTO contient (ID_COMMANDE,ID_MODELE,QUANTITE,PRIX) VALUES(?,?,?,?)")
-            ->execute([$commandeId, $modele['ID_MODELE'], $it['QUANTITE'], $prix]);
+            ->execute([$commandeId, $modele['ID_MODELE'], $qteCmd, $prix]);
 
         $pdo->prepare("UPDATE modele_produit SET QUANTITE=QUANTITE-? WHERE ID_MODELE=?")
-            ->execute([$it['QUANTITE'], $modele['ID_MODELE']]);
+            ->execute([$qteCmd, $modele['ID_MODELE']]);
     }
 
     $livreurDisp = $pdo->query("SELECT ID_LIVREUR FROM livreur WHERE STATUT_LIVREUR='disponible' LIMIT 1")->fetch();

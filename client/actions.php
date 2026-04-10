@@ -30,50 +30,53 @@ switch ($action) {
 
     case 'add_to_cart':
         $produitId = intval($_POST['id_produit'] ?? 0);
+        $taille    = trim($_POST['taille'] ?? '');
         $qte       = max(1, intval($_POST['qte'] ?? 1));
         if (!$produitId) { echo json_encode(['success' => false, 'message' => 'Produit introuvable.']); exit; }
+        if (empty($taille)) { echo json_encode(['success' => false, 'message' => 'Veuillez sélectionner une taille.']); exit; }
         if (!isset($_SESSION['panier_id'])) {
             $pdo->prepare("INSERT INTO panier (DATE_CREATION, MONTANT_PANIER) VALUES (CURDATE(), 0)")->execute();
             $_SESSION['panier_id'] = $pdo->lastInsertId();
         }
         $panierId = $_SESSION['panier_id'];
-        $stockStmt = $pdo->prepare("SELECT COALESCE(SUM(QUANTITE),0) FROM modele_produit WHERE ID_PRODUIT=?");
-        $stockStmt->execute([$produitId]);
-        $stockTotal = (int)$stockStmt->fetchColumn();
-        if ($stockTotal <= 0) {
-            echo json_encode(['success' => false, 'message' => 'Ce produit est en rupture de stock.']);
+        $stockStmt = $pdo->prepare("SELECT COALESCE(SUM(QUANTITE),0) FROM modele_produit WHERE ID_PRODUIT=? AND TAILLE=?");
+        $stockStmt->execute([$produitId, $taille]);
+        $stockTaille = (int)$stockStmt->fetchColumn();
+        if ($stockTaille <= 0) {
+            echo json_encode(['success' => false, 'message' => 'Cette taille est en rupture de stock.']);
             exit;
         }
-        $exist = $pdo->prepare("SELECT QUANTITE FROM inclure WHERE ID_PANIER=? AND ID_PRODUIT=?");
-        $exist->execute([$panierId, $produitId]);
+        $exist = $pdo->prepare("SELECT QUANTITE FROM inclure WHERE ID_PANIER=? AND ID_PRODUIT=? AND TAILLE=?");
+        $exist->execute([$panierId, $produitId, $taille]);
         $existRow = $exist->fetch();
         $currentQty = $existRow ? (int)$existRow['QUANTITE'] : 0;
         $newQty = $currentQty + $qte;
-        if ($newQty > $stockTotal) {
-            $remaining = $stockTotal - $currentQty;
+        if ($newQty > $stockTaille) {
+            $remaining = $stockTaille - $currentQty;
             if ($remaining <= 0) {
-                echo json_encode(['success' => false, 'message' => 'Vous avez déjà le maximum en stock ('.$stockTotal.') dans votre panier.']);
+                echo json_encode(['success' => false, 'message' => 'Vous avez déjà le maximum en stock ('.$stockTaille.') pour la taille '.$taille.' dans votre panier.']);
             } else {
-                echo json_encode(['success' => false, 'message' => 'Stock insuffisant. Il ne reste que '.$remaining.' article(s) disponible(s).']);
+                echo json_encode(['success' => false, 'message' => 'Stock insuffisant pour la taille '.$taille.'. Il ne reste que '.$remaining.' article(s).']);
             }
             exit;
         }
         if ($existRow) {
-            $pdo->prepare("UPDATE inclure SET QUANTITE=? WHERE ID_PANIER=? AND ID_PRODUIT=?")->execute([$newQty, $panierId, $produitId]);
+            $pdo->prepare("UPDATE inclure SET QUANTITE=? WHERE ID_PANIER=? AND ID_PRODUIT=? AND TAILLE=?")->execute([$newQty, $panierId, $produitId, $taille]);
         } else {
-            $pdo->prepare("INSERT INTO inclure (ID_PANIER,ID_PRODUIT,QUANTITE) VALUES(?,?,?)")->execute([$panierId, $produitId, $qte]);
+            $pdo->prepare("INSERT INTO inclure (ID_PANIER,ID_PRODUIT,TAILLE,QUANTITE) VALUES(?,?,?,?)")->execute([$panierId, $produitId, $taille, $qte]);
         }
         $total = $pdo->prepare("SELECT COALESCE(SUM(QUANTITE),0) FROM inclure WHERE ID_PANIER=?");
         $total->execute([$panierId]);
         $panierCount = (int)$total->fetchColumn();
-        echo json_encode(['success' => true, 'message' => 'Ajouté au panier !', 'panier_count' => $panierCount]);
+        echo json_encode(['success' => true, 'message' => 'Ajouté au panier ! (Taille '.$taille.')', 'panier_count' => $panierCount]);
         break;
 
     case 'remove_from_cart':
         $produitId = intval($_POST['id_produit'] ?? 0);
+        $taille    = trim($_POST['taille'] ?? '');
         $panierId  = $_SESSION['panier_id'] ?? null;
         if (!$produitId || !$panierId) { echo json_encode(['success' => false]); exit; }
-        $pdo->prepare("DELETE FROM inclure WHERE ID_PANIER=? AND ID_PRODUIT=?")->execute([$panierId, $produitId]);
+        $pdo->prepare("DELETE FROM inclure WHERE ID_PANIER=? AND ID_PRODUIT=? AND TAILLE=?")->execute([$panierId, $produitId, $taille]);
         $total = $pdo->prepare("SELECT COALESCE(SUM(QUANTITE),0) FROM inclure WHERE ID_PANIER=?");
         $total->execute([$panierId]);
         $panierCount = (int)$total->fetchColumn();
@@ -88,20 +91,21 @@ switch ($action) {
 
     case 'update_cart_qty':
         $produitId = intval($_POST['id_produit'] ?? 0);
+        $taille    = trim($_POST['taille'] ?? '');
         $qte       = intval($_POST['qte'] ?? 1);
         $panierId  = $_SESSION['panier_id'] ?? null;
         if (!$produitId || !$panierId) { echo json_encode(['success' => false]); exit; }
         if ($qte <= 0) {
-            $pdo->prepare("DELETE FROM inclure WHERE ID_PANIER=? AND ID_PRODUIT=?")->execute([$panierId, $produitId]);
+            $pdo->prepare("DELETE FROM inclure WHERE ID_PANIER=? AND ID_PRODUIT=? AND TAILLE=?")->execute([$panierId, $produitId, $taille]);
         } else {
-            $stockStmt = $pdo->prepare("SELECT COALESCE(SUM(QUANTITE),0) FROM modele_produit WHERE ID_PRODUIT=?");
-            $stockStmt->execute([$produitId]);
-            $stockTotal = (int)$stockStmt->fetchColumn();
-            if ($qte > $stockTotal) {
-                echo json_encode(['success' => false, 'message' => 'Stock insuffisant. Il ne reste que '.$stockTotal.' article(s) disponible(s).', 'stock_max' => $stockTotal]);
+            $stockStmt = $pdo->prepare("SELECT COALESCE(SUM(QUANTITE),0) FROM modele_produit WHERE ID_PRODUIT=? AND TAILLE=?");
+            $stockStmt->execute([$produitId, $taille]);
+            $stockTaille = (int)$stockStmt->fetchColumn();
+            if ($qte > $stockTaille) {
+                echo json_encode(['success' => false, 'message' => 'Stock insuffisant pour la taille '.$taille.'. Il ne reste que '.$stockTaille.' article(s).', 'stock_max' => $stockTaille]);
                 exit;
             }
-            $pdo->prepare("UPDATE inclure SET QUANTITE=? WHERE ID_PANIER=? AND ID_PRODUIT=?")->execute([$qte, $panierId, $produitId]);
+            $pdo->prepare("UPDATE inclure SET QUANTITE=? WHERE ID_PANIER=? AND ID_PRODUIT=? AND TAILLE=?")->execute([$qte, $panierId, $produitId, $taille]);
         }
         $stmt = $pdo->prepare("SELECT i.QUANTITE, p.PRIX, p.EN_PROMO, p.PRIX_PROMO FROM inclure i JOIN produit p ON i.ID_PRODUIT=p.ID_PRODUIT WHERE i.ID_PANIER=?");
         $stmt->execute([$panierId]);

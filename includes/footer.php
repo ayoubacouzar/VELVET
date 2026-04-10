@@ -23,10 +23,10 @@ $_footer_cats = $pdo->query("
                     VELVET — votre destination mode premium au Maroc depuis 2018.
                 </p>
                 <div class="footer-social">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-tiktok"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://www.tiktok.com/explore"><i class="fab fa-tiktok"></i></a>
+                    <a href="https://www.youtube.com/"><i class="fab fa-youtube"></i></a>
                 </div>
             </div>
 

@@ -11,16 +11,16 @@ $sousTotal = 0;
 
 if ($panierId) {
     $stmt = $pdo->prepare("
-        SELECT i.ID_PRODUIT, i.QUANTITE,
+        SELECT i.ID_PRODUIT, i.TAILLE, i.QUANTITE,
                p.NOM_PRODUIT, p.IMAGE1, p.IMAGE2, p.IMAGE3,
                p.PRIX, p.EN_PROMO, p.PRIX_PROMO,
                sc.NOM_SOUS_CATEGORIE,
-               (SELECT COALESCE(SUM(QUANTITE),0) FROM modele_produit WHERE ID_PRODUIT = p.ID_PRODUIT) AS stock_total
+               (SELECT COALESCE(SUM(QUANTITE),0) FROM modele_produit WHERE ID_PRODUIT = p.ID_PRODUIT AND TAILLE = i.TAILLE) AS stock_taille
         FROM inclure i
         JOIN produit p ON i.ID_PRODUIT = p.ID_PRODUIT
         LEFT JOIN sous_categorie sc ON p.ID_SOUS_CATEGORIE = sc.ID_SOUS_CATEGORIE
         WHERE i.ID_PANIER = ?
-        ORDER BY i.ID_PRODUIT
+        ORDER BY i.ID_PRODUIT, i.TAILLE
     ");
     $stmt->execute([$panierId]);
     $items = $stmt->fetchAll();
@@ -39,7 +39,7 @@ function getCartImg(array $p): string {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -182,6 +182,8 @@ function getCartImg(array $p): string {
             font-size: 9px; letter-spacing: 1px;
             padding: 4px 10px; border-radius: 20px; z-index: 2;
         }
+        .prod-size { font-size: 11px; color: #888; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .prod-size strong { color: #333; }
 
         
         .btn-card-remove {
@@ -199,7 +201,7 @@ function getCartImg(array $p): string {
         
         .prod-body { padding: 14px 16px 16px; }
         .prod-sc { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #bbb; margin-bottom: 3px; }
-        .prod-name { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 8px; line-height: 1.3; }
+        .prod-name { font-size: 13px; font-weight: 700; color: #111; margin-bottom: 4px; line-height: 1.3; }
         .prod-prices { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
         .price-final { font-size: 15px; font-weight: 800; color: #000; }
         .price-final.sale { color: #e63946; }
@@ -354,7 +356,7 @@ function getCartImg(array $p): string {
                  font-size: 13px; font-weight: 600; z-index: 9999;
                  opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
         #toast.show { opacity: 1; }
-        #toast.success { background: #111; }
+        #toast.success { background: #27ae60; }
         #toast.error { background: #e63946; }
         #toast.info { background: #333; }
         #toast.warning { background: #f39c12; }
@@ -437,18 +439,20 @@ function getCartImg(array $p): string {
                         $promo    = $it['EN_PROMO'] && $it['PRIX_PROMO'];
                         $prixUnit = $promo ? $it['PRIX_PROMO'] : $it['PRIX'];
                         $subtotal = $prixUnit * $it['QUANTITE'];
-                        $stock    = (int)$it['stock_total'];
-                        $stockMax = min(10, max(1, $stock));
+                        $stock    = (int)$it['stock_taille'];
+                        $stockMax = max(1, $stock);
+                        $taille   = $it['TAILLE'];
+                        $itemKey  = $it['ID_PRODUIT'] . '_' . $taille;
                     ?>
-                    <div class="col-6 col-md-4 prod-col" id="cart-col-<?= $it['ID_PRODUIT'] ?>" style="animation-delay: <?= $i * 0.045 ?>s;">
+                    <div class="col-6 col-md-4 prod-col" id="cart-col-<?= $itemKey ?>" style="animation-delay: <?= $i * 0.045 ?>s;">
                         <div class="prod-card">
 
-                            
+
                             <div class="prod-img-wrap">
                                 <a href="produit.php?id=<?= $it['ID_PRODUIT'] ?>">
                                     <?php if ($img): ?>
                                         <img src="<?= htmlspecialchars('../' . $img) ?>"
-                                             alt="<?= htmlspecialchars($it['NOM_PRODUIT']) ?>"
+                                             alt="<?= htmlspecialchars(ucwords(strtolower($it['NOM_PRODUIT']))) ?> — Velvet Fashion"
                                              loading="lazy"
                                              onerror="this.parentNode.innerHTML='<div class=\'prod-no-img\'><i class=\'fas fa-shirt\'></i></div>'">
                                     <?php else: ?>
@@ -465,12 +469,12 @@ function getCartImg(array $p): string {
                                 <?php endif; ?>
 
                                 <button class="btn-card-remove" title="Retirer du panier"
-                                        onclick="removeItem(<?= $it['ID_PRODUIT'] ?>, <?= (float)$prixUnit ?>)">
+                                        onclick="removeItem(<?= $it['ID_PRODUIT'] ?>, '<?= htmlspecialchars($taille, ENT_QUOTES) ?>')">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
                             </div>
 
-                            
+
                             <div class="prod-body">
                                 <?php if ($it['NOM_SOUS_CATEGORIE']): ?>
                                     <p class="prod-sc"><?= htmlspecialchars($it['NOM_SOUS_CATEGORIE']) ?></p>
@@ -478,6 +482,7 @@ function getCartImg(array $p): string {
                                 <a href="produit.php?id=<?= $it['ID_PRODUIT'] ?>" style="text-decoration:none;">
                                     <p class="prod-name"><?= htmlspecialchars($it['NOM_PRODUIT']) ?></p>
                                 </a>
+                                <p class="prod-size">Taille : <strong><?= htmlspecialchars($taille) ?></strong></p>
                                 <div class="prod-prices">
                                     <?php if ($promo): ?>
                                         <span class="price-final sale"><?= number_format($prixUnit, 0) ?> DH</span>
@@ -487,18 +492,18 @@ function getCartImg(array $p): string {
                                     <?php endif; ?>
                                 </div>
 
-                                
+
                                 <div class="qty-row">
                                     <div class="qty-controls">
                                         <button class="qty-btn"
-                                                onclick="changeQty(<?= $it['ID_PRODUIT'] ?>, -1, <?= $stockMax ?>)"
+                                                onclick="changeQty(<?= $it['ID_PRODUIT'] ?>, '<?= htmlspecialchars($taille, ENT_QUOTES) ?>', -1)"
                                                 title="Diminuer">−</button>
-                                        <span class="qty-value" id="qty-<?= $it['ID_PRODUIT'] ?>"><?= $it['QUANTITE'] ?></span>
+                                        <span class="qty-value" id="qty-<?= $itemKey ?>"><?= $it['QUANTITE'] ?></span>
                                         <button class="qty-btn"
-                                                onclick="changeQty(<?= $it['ID_PRODUIT'] ?>, +1, <?= $stockMax ?>)"
+                                                onclick="changeQty(<?= $it['ID_PRODUIT'] ?>, '<?= htmlspecialchars($taille, ENT_QUOTES) ?>', +1)"
                                                 title="Augmenter">+</button>
                                     </div>
-                                    <span class="line-total" id="total-<?= $it['ID_PRODUIT'] ?>"><?= number_format($subtotal,0) ?> DH</span>
+                                    <span class="line-total" id="total-<?= $itemKey ?>"><?= number_format($subtotal,0) ?> DH</span>
                                 </div>
                             </div>
                         </div>
@@ -561,36 +566,41 @@ const PRIX = {
     <?php foreach ($items as $it):
         $promo = $it['EN_PROMO'] && $it['PRIX_PROMO'];
         $pu    = $promo ? $it['PRIX_PROMO'] : $it['PRIX'];
+        $key   = $it['ID_PRODUIT'] . '_' . $it['TAILLE'];
     ?>
-    <?= $it['ID_PRODUIT'] ?>: <?= (float)$pu ?>,
+    '<?= $key ?>': <?= (float)$pu ?>,
     <?php endforeach; ?>
 };
 const STOCK = {
-    <?php foreach ($items as $it): ?>
-    <?= $it['ID_PRODUIT'] ?>: <?= max(0,(int)$it['stock_total']) ?>,
+    <?php foreach ($items as $it):
+        $key = $it['ID_PRODUIT'] . '_' . $it['TAILLE'];
+    ?>
+    '<?= $key ?>': <?= max(0,(int)$it['stock_taille']) ?>,
     <?php endforeach; ?>
 };
 
 
-function changeQty(produitId, delta, stockMax) {
-    const qtyEl = document.getElementById('qty-' + produitId);
+function changeQty(produitId, taille, delta) {
+    const itemKey = produitId + '_' + taille;
+    const qtyEl = document.getElementById('qty-' + itemKey);
     if (!qtyEl) return;
     let current = parseInt(qtyEl.textContent, 10);
     let newQty  = current + delta;
-    if (newQty < 1) { removeItem(produitId, PRIX[produitId]); return; }
-    const maxStock = STOCK[produitId] || 0;
+    if (newQty < 1) { removeItem(produitId, taille); return; }
+    const maxStock = STOCK[itemKey] || 0;
     if (newQty > maxStock) {
-        showToast('Stock insuffisant. Il ne reste que ' + maxStock + ' article(s) disponible(s).', 'warning');
+        showToast('Stock insuffisant pour la taille ' + taille + '. Il ne reste que ' + maxStock + ' article(s).', 'warning');
         return;
     }
     qtyEl.textContent = newQty;
 
-    const lineTotal = document.getElementById('total-' + produitId);
-    if (lineTotal) lineTotal.textContent = Math.round(PRIX[produitId] * newQty).toLocaleString('fr-MA') + ' DH';
+    const lineTotal = document.getElementById('total-' + itemKey);
+    if (lineTotal) lineTotal.textContent = Math.round(PRIX[itemKey] * newQty).toLocaleString('fr-MA') + ' DH';
 
     const data = new FormData();
     data.append('action', 'update_cart_qty');
     data.append('id_produit', produitId);
+    data.append('taille', taille);
     data.append('qte', newQty);
 
     fetch('actions.php', { method: 'POST', body: data })
@@ -600,7 +610,7 @@ function changeQty(produitId, delta, stockMax) {
                 updateSummary(res);
             } else {
                 qtyEl.textContent = current;
-                if (lineTotal) lineTotal.textContent = Math.round(PRIX[produitId] * current).toLocaleString('fr-MA') + ' DH';
+                if (lineTotal) lineTotal.textContent = Math.round(PRIX[itemKey] * current).toLocaleString('fr-MA') + ' DH';
                 showToast(res.message || 'Erreur.', 'warning');
             }
         })
@@ -608,13 +618,15 @@ function changeQty(produitId, delta, stockMax) {
 }
 
 
-function removeItem(produitId, prixUnit) {
-    const col = document.getElementById('cart-col-' + produitId);
+function removeItem(produitId, taille) {
+    const itemKey = produitId + '_' + taille;
+    const col = document.getElementById('cart-col-' + itemKey);
     if (col) col.classList.add('removing');
 
     const data = new FormData();
     data.append('action', 'remove_from_cart');
     data.append('id_produit', produitId);
+    data.append('taille', taille);
 
     fetch('actions.php', { method: 'POST', body: data })
         .then(r => r.json())

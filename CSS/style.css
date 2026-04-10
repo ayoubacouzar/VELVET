@@ -1125,7 +1125,7 @@ footer {
     max-width: 420px;
 }
 .toast-msg.show  { opacity: 1; transform: translateX(-50%) translateY(0); }
-.toast-msg.success { background: #111; }
+.toast-msg.success { background: #27ae60; }
 .toast-msg.error   { background: #c0392b; }
 .toast-msg.warning { background: #d68910; }
 .toast-msg.info    { background: #2471a3; }

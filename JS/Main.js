@@ -171,7 +171,7 @@ function updatePanierBadge(count) {
 function quickAddToCart(id) {
     const inClient = window.location.pathname.includes('/client/');
     const actionsUrl = inClient ? 'actions.php' : 'client/actions.php';
-    const prodUrl    = inClient ? 'produit.php?id=' + id : 'client/produit.php?id=' + id;
+    const panierUrl  = inClient ? 'panier.php' : 'client/panier.php';
 
     fetch(actionsUrl, {
         method: 'POST',
@@ -185,10 +185,10 @@ function quickAddToCart(id) {
             const icon = document.querySelector('.nav-panier-wrap .nav-icon i');
             if (icon) { icon.style.transform = 'scale(1.4)'; setTimeout(() => { icon.style.transform = ''; }, 200); }
         } else {
-            window.location.href = prodUrl;
+            window.location.href = panierUrl;
         }
     })
-    .catch(() => { window.location.href = prodUrl; });
+    .catch(() => { window.location.href = panierUrl; });
 }
 
 

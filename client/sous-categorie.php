@@ -397,7 +397,7 @@ $scNom = ucfirst(strtolower(trim($sc['NOM_SOUS_CATEGORIE'])));
         <div class="col-6 col-md-4 col-lg-3"><div class="prod-card">
             <div class="prod-img-wrap">
                 <a href="<?= $lien ?>">
-                    <img src="<?= $imgSrc ?>" alt="<?= htmlspecialchars($p['NOM_PRODUIT']) ?>" loading="lazy"
+                    <img src="<?= $imgSrc ?>" alt="<?= htmlspecialchars(ucwords(strtolower($p['NOM_PRODUIT']))) ?> — Velvet Fashion" loading="lazy"
                          onerror="this.parentNode.innerHTML='<div class=\'prod-no-img\'><i class=\'fas fa-tshirt\'></i></div>'">
                 </a>
                 <?php if ($isPromo): ?>

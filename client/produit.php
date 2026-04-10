@@ -148,7 +148,7 @@ try {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -595,16 +595,14 @@ try {
     <div class="container">
         <div class="row">
 
-            
             <div class="col-lg-6 fade-in-up" style="animation-delay:0.1s">
                 <div class="gallery-wrap">
 
-                    
                     <div class="main-photo" onclick="openZoom(this.querySelector('img').src)">
                         <img src="<?= htmlspecialchars($images[0]) ?>"
-                             id="mainPhoto"
-                             alt="<?= htmlspecialchars($produit['NOM_PRODUIT']) ?>"
-                             onerror="this.src='images/placeholder.jpg'">
+                            id="mainPhoto"
+                            alt="<?= htmlspecialchars(ucwords(strtolower($produit['NOM_PRODUIT']))) ?> — Velvet Fashion"
+                            onerror="this.src='images/placeholder.jpg'">
 
                         <div class="photo-badge">
                             <?php if ($en_promo): ?>
@@ -1277,7 +1275,7 @@ $totalAvis = count($avisListe);
                     <div class="prod-img-wrap">
                         <a href="produit.php?id=<?= $sim['ID_PRODUIT'] ?>">
                             <?php if ($sim_img_src): ?>
-                                <img src="<?= htmlspecialchars($sim_img_src) ?>" alt="<?= htmlspecialchars($sim['NOM_PRODUIT']) ?>" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\'prod-no-img\'><i class=\'fas fa-tshirt\'></i></div>'">
+                                <img src="<?= htmlspecialchars($sim_img_src) ?>" alt="<?= htmlspecialchars(ucwords(strtolower($sim['NOM_PRODUIT']))) ?> — Velvet Fashion" loading="lazy" onerror="this.parentNode.innerHTML='<div class=\'prod-no-img\'><i class=\'fas fa-tshirt\'></i></div>'">
                             <?php else: ?>
                                 <div class="prod-no-img"><i class="fas fa-tshirt"></i></div>
                             <?php endif; ?>
@@ -1416,9 +1414,11 @@ document.querySelector('.accord-header')?.click();
             cartBtn.disabled = true;
             cartBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Ajout en cours...';
 
+            var selectedTaille = selected ? selected.dataset.taille : '';
             var data = new FormData();
             data.append('action', 'add_to_cart');
             data.append('id_produit', prodId);
+            data.append('taille', selectedTaille);
             data.append('qte', 1);
 
             fetch('actions.php', { method: 'POST', body: data })

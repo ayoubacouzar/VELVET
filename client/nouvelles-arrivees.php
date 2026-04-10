@@ -369,7 +369,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
                  font-size: 13px; font-weight: 600; z-index: 9999;
                  opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
         #toast.show { opacity: 1; }
-        #toast.success { background: #111; }
+        #toast.success { background: #27ae60; }
         #toast.error { background: #e63946; }
         #toast.warning { background: #f39c12; }
     </style>
@@ -448,7 +448,7 @@ function buildUrl($catVal, $sortVal, $pageVal = 1) {
                     <div class="prod-img-wrap">
                         <a href="<?= $lien ?>">
                             <?php if ($imgSrc): ?>
-                                <img src="<?= $imgSrc ?>" alt="<?= htmlspecialchars($p['NOM_PRODUIT']) ?>" loading="lazy"
+                                <img src="<?= $imgSrc ?>" alt="<?= htmlspecialchars(ucwords(strtolower($p['NOM_PRODUIT']))) ?> — Velvet Fashion" loading="lazy"
                                      onerror="this.parentNode.innerHTML='<div class=\'prod-no-img\'><i class=\'fas fa-shirt\'></i></div>'">
                             <?php else: ?>
                                 <div class="prod-no-img"><i class="fas fa-shirt"></i></div>

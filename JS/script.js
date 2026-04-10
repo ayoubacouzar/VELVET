@@ -120,15 +120,37 @@ function getActionsPath() {
 }
 
 
-function addToCart(produitId, qte) {
+function addToCart(produitId, qte, taille) {
     qte = qte || 1;
     const btn = document.querySelector(`[data-cart-id="${produitId}"]`);
+    if (!taille && btn) {
+        const card = btn.closest('.prod-card');
+        if (card) {
+            const active = card.querySelector('.sz-active');
+            if (active) taille = active.textContent.trim();
+        }
+    }
+    if (!taille && btn) {
+        const card = btn.closest('.prod-card');
+        if (card) {
+            const firstAvail = card.querySelector('.sz:not(.sz-out)');
+            if (firstAvail) {
+                firstAvail.classList.add('sz-active');
+                taille = firstAvail.textContent.trim();
+            }
+        }
+    }
+    if (!taille) {
+        showToast('Aucune taille disponible.', 'warning');
+        return;
+    }
     if (btn) { btn.classList.add('loading'); btn.disabled = true; }
 
     const data = new FormData();
     data.append('action', 'add_to_cart');
     data.append('id_produit', produitId);
     data.append('qte', qte);
+    data.append('taille', taille);
 
     fetch(getActionsPath(), { method: 'POST', body: data })
         .then(r => r.json())
@@ -156,13 +178,15 @@ function addToCart(produitId, qte) {
                     setTimeout(() => { btn.classList.remove('added'); btn.disabled = false; }, 2000);
                 }
             } else {
-                showToast('✗ ' + (res.message || 'Erreur'), 'error');
-                if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
+                const inClient = window.location.pathname.includes('/client/');
+                const panierUrl = inClient ? 'panier.php' : 'client/panier.php';
+                window.location.href = panierUrl;
             }
         })
         .catch(() => {
-            showToast('✗ Erreur réseau', 'error');
-            if (btn) { btn.classList.remove('loading'); btn.disabled = false; }
+            const inClient = window.location.pathname.includes('/client/');
+            const panierUrl = inClient ? 'panier.php' : 'client/panier.php';
+            window.location.href = panierUrl;
         });
 }
 
@@ -234,7 +258,8 @@ document.addEventListener('click', function(e) {
         e.preventDefault();
         const id  = cartBtn.dataset.addCart;
         const qte = cartBtn.dataset.qte || 1;
-        addToCart(id, qte);
+        const taille = cartBtn.dataset.taille || '';
+        addToCart(id, qte, taille);
         return;
     }
     

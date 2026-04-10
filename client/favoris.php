@@ -268,7 +268,7 @@ function getFavImg(array $p): string {
                  font-size: 13px; font-weight: 600; z-index: 9999;
                  opacity: 0; transition: opacity 0.3s; pointer-events: none; white-space: nowrap; }
         #toast.show { opacity: 1; }
-        #toast.success { background: #111; }
+        #toast.success { background: #27ae60; }
         #toast.error { background: #e63946; }
         #toast.info { background: #333; }
         #toast.warning { background: #f39c12; }
@@ -331,7 +331,7 @@ function getFavImg(array $p): string {
                         <a href="produit.php?id=<?= $fav['ID_PRODUIT'] ?>">
                             <?php if ($img): ?>
                                 <img src="<?= htmlspecialchars('../' . $img) ?>"
-                                     alt="<?= htmlspecialchars($fav['NOM_PRODUIT']) ?>"
+                                     alt="<?= htmlspecialchars(ucwords(strtolower($fav['NOM_PRODUIT']))) ?> — Velvet Fashion"
                                      loading="lazy"
                                      onerror="this.parentNode.innerHTML='<div class=\'prod-no-img\'><i class=\'fas fa-shirt\'></i></div>'">
                             <?php else: ?>

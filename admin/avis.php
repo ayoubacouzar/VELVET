@@ -159,6 +159,7 @@ $negatifs  = array_sum(array_filter(array_column($avis_list, 'NOTE'), fn($n) => 
             <td><a href="?delete=<?= $a['ID_AVIS'] ?>" class="btn btn-del btn-sm" onclick="return confirm('Supprimer cet avis ?')"><i class="fas fa-trash"></i></a></td></tr>
             <?php endforeach; ?>
             </tbody></table></div>
+            <div id="paginationControls" style="display:flex;justify-content:center;gap:8px;margin:20px 0;flex-wrap:wrap;"></div>
             <?php endif; ?>
         </div>
     </div>
@@ -173,15 +174,52 @@ function showToast(msg, type) {
     clearTimeout(toast._timer);
     toast._timer = setTimeout(() => toast.classList.remove('show'), 5000);
 }
+const ROWS_PER_PAGE = 15;
+let currentPage = 1;
+
+function getFilteredRows() {
+    const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+    const all = [...document.querySelectorAll('#avisTable tbody tr')];
+    if (!q) return all;
+    return all.filter(tr => tr.textContent.toLowerCase().includes(q));
+}
+
+function renderPage() {
+    const allRows = [...document.querySelectorAll('#avisTable tbody tr')];
+    const filtered = getFilteredRows();
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / ROWS_PER_PAGE));
+    if (currentPage > totalPages) currentPage = totalPages;
+
+    allRows.forEach(r => r.style.display = 'none');
+    filtered.forEach((r, i) => {
+        r.style.display = (i >= (currentPage-1)*ROWS_PER_PAGE && i < currentPage*ROWS_PER_PAGE) ? '' : 'none';
+    });
+
+    const pc = document.getElementById('paginationControls');
+    if (!pc) return;
+    pc.innerHTML = '';
+    if (totalPages <= 1) return;
+    const makeBtn = (label, page, active, disabled) => {
+        const b = document.createElement('button');
+        b.innerHTML = label;
+        b.style.cssText = `padding:6px 12px;border-radius:6px;border:1px solid ${active?'#000':'#ddd'};background:${active?'#000':'#fff'};color:${active?'#fff':'#333'};cursor:${disabled?'not-allowed':'pointer'};margin:0 2px;opacity:${disabled?'0.4':'1'};`;
+        if (!disabled) b.onclick = () => { currentPage = page; renderPage(); };
+        return b;
+    };
+    pc.appendChild(makeBtn('<i class="fas fa-chevron-left"></i>', currentPage-1, false, currentPage <= 1));
+    for(let i=1;i<=totalPages;i++) pc.appendChild(makeBtn(i, i, i===currentPage, false));
+    pc.appendChild(makeBtn('<i class="fas fa-chevron-right"></i>', currentPage+1, false, currentPage >= totalPages));
+}
+
 window.addEventListener('DOMContentLoaded', () => {
     const el = document.getElementById('phpToast');
     if (el) showToast(el.dataset.msg, el.dataset.type);
+    renderPage();
 });
 document.getElementById('searchInput')?.addEventListener('input', function() {
-    const q = this.value.toLowerCase();
-    document.querySelectorAll('#avisTable tbody tr').forEach(tr => {
-        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
-    });
+    currentPage = 1;
+    renderPage();
 });
 </script>
 </body>

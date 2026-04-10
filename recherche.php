@@ -391,7 +391,7 @@ function getImg(array $p): string {
                     <a href="client/produit.php?id=<?= $pid ?>">
                         <?php if ($imgSrc): ?>
                             <img src="<?= htmlspecialchars($imgSrc) ?>"
-                                 alt="<?= htmlspecialchars($p['NOM_PRODUIT']) ?>"
+                                 alt="<?= htmlspecialchars(ucwords(strtolower($p['NOM_PRODUIT']))) ?> — Velvet Fashion"
                                  onerror="this.style.display='none'">
                         <?php else: ?>
                             <div class="prod-no-img"><i class="fas fa-shirt"></i></div>

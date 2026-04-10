@@ -119,10 +119,7 @@ function statutBadge(string $s): array {
     $s = mb_strtolower(trim($s));
     return match(true) {
         str_contains($s, 'livr') => ['s-livree',   'fa-check-circle',   'Livré'],
-        str_contains($s, 'en cours') => ['s-confirmee','fa-thumbs-up',       'En cours'],
-        str_contains($s, 'confirm') => ['s-confirmee','fa-thumbs-up',       'Confirmée'],
-        str_contains($s, 'annul') => ['s-annulee',  'fa-times-circle',    'Annulée'],
-        default => ['s-attente',  'fa-clock',           'En attente'],
+        default => ['s-confirmee','fa-thumbs-up',       'En cours'],
     };
 }
 ?>
@@ -151,10 +148,8 @@ function statutBadge(string $s): array {
         .admin-table tbody tr:hover { background:#fafafa; }
         .admin-table tbody td { padding:11px 14px; vertical-align:middle; }
         .badge { display:inline-flex; align-items:center; gap:5px; padding:4px 11px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
-        .s-attente    { background:#fff8e1; color:#f57f17; }
         .s-confirmee  { background:#e3f2fd; color:#1565c0; }
         .s-livree     { background:#e8f5e9; color:#2e7d32; }
-        .s-annulee    { background:#ffebee; color:#c62828; }
         .btn { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border-radius:8px; border:none; cursor:pointer; font-size:13px; font-family:'Inter',sans-serif; font-weight:500; transition:.2s; text-decoration:none; }
         .btn-black { background:#000; color:#fff; } .btn-black:hover { background:#333; }
         .btn-light { background:#f0f0f0; color:#333; } .btn-light:hover { background:#e0e0e0; }
@@ -293,32 +288,46 @@ window.addEventListener('DOMContentLoaded', () => {
     renderPage();
 });
 
-const ROWS_PER_PAGE = 20;
+const ROWS_PER_PAGE = 10;
 let currentPage = 1;
+let filteredRows = [];
+
+function getFilteredRows() {
+    const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+    const all = [...document.querySelectorAll('#cmdTbody tr')];
+    if (!q) return all;
+    return all.filter(tr => tr.textContent.toLowerCase().includes(q));
+}
+
 function renderPage() {
-    const rows = [...document.querySelectorAll('#cmdTbody tr')];
-    const total = rows.length;
+    const allRows = [...document.querySelectorAll('#cmdTbody tr')];
+    filteredRows = getFilteredRows();
+    const total = filteredRows.length;
     const totalPages = Math.max(1, Math.ceil(total / ROWS_PER_PAGE));
     if (currentPage > totalPages) currentPage = totalPages;
-    rows.forEach((r,i) => { r.style.display = (i >= (currentPage-1)*ROWS_PER_PAGE && i < currentPage*ROWS_PER_PAGE) ? '' : 'none'; });
+
+    allRows.forEach(r => r.style.display = 'none');
+    filteredRows.forEach((r, i) => {
+        r.style.display = (i >= (currentPage-1)*ROWS_PER_PAGE && i < currentPage*ROWS_PER_PAGE) ? '' : 'none';
+    });
+
     const pc = document.getElementById('paginationControls');
     pc.innerHTML = '';
     if (totalPages <= 1) return;
-    const makeBtn = (label, page, active) => {
+    const makeBtn = (label, page, active, disabled) => {
         const b = document.createElement('button');
-        b.innerHTML = label; b.style.cssText = `padding:6px 12px;border-radius:6px;border:1px solid ${active?'#000':'#ddd'};background:${active?'#000':'#fff'};color:${active?'#fff':'#333'};cursor:pointer;margin:0 2px;`;
-        b.onclick = () => { currentPage = page; renderPage(); };
+        b.innerHTML = label;
+        b.style.cssText = `padding:6px 12px;border-radius:6px;border:1px solid ${active?'#000':'#ddd'};background:${active?'#000':'#fff'};color:${active?'#fff':'#333'};cursor:${disabled?'not-allowed':'pointer'};margin:0 2px;opacity:${disabled?'0.4':'1'};`;
+        if (!disabled) b.onclick = () => { currentPage = page; renderPage(); };
         return b;
     };
-    pc.appendChild(makeBtn('<i class="fas fa-chevron-left"></i>', currentPage-1, false));
-    for(let i=1;i<=totalPages;i++) pc.appendChild(makeBtn(i, i, i===currentPage));
-    pc.appendChild(makeBtn('<i class="fas fa-chevron-right"></i>', currentPage+1, false));
+    pc.appendChild(makeBtn('<i class="fas fa-chevron-left"></i>', currentPage-1, false, currentPage <= 1));
+    for(let i=1;i<=totalPages;i++) pc.appendChild(makeBtn(i, i, i===currentPage, false));
+    pc.appendChild(makeBtn('<i class="fas fa-chevron-right"></i>', currentPage+1, false, currentPage >= totalPages));
 }
+
 document.getElementById('searchInput')?.addEventListener('input', function() {
-    const q = this.value.toLowerCase();
-    document.querySelectorAll('#cmdTbody tr').forEach(tr => {
-        tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
-    });
+    currentPage = 1;
     renderPage();
 });
 document.getElementById('modalDetail')?.addEventListener('click', e => { if (e.target === document.getElementById('modalDetail')) window.location = 'commandes.php'; });

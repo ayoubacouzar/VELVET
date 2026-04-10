@@ -71,6 +71,8 @@ function getImage(array $p): string {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Découvrez Velvet, votre boutique de mode incontournable. Nous proposons une sélection exclusive de vêtements pour hommes et femmes, alliant élégance, confort et qualité supérieure. Sublimez votre style avec nos collections uniques.">
+    <meta name="keywords" content="Velvet boutique, Velvet mode Maroc, Velvet Oujda, Achat vêtements en ligne, Mode homme luxe,Prêt-à-porter femme, Boutique mode premium Oujda, Vêtements tendance Maroc, Collection mode Velvet, Shopping en ligne Oujda">  
     <link rel="icon" type="image/png" href="images/VELVET_LOGO_blanc.png">
     <title>Velvet Fashion — Mode Premium au Maroc</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -101,7 +103,7 @@ function getImage(array $p): string {
         .btn-voir-plus i { transition: transform 0.4s ease; }
         .btn-voir-plus:hover i { transform: translateX(4px); }
 
-        
+
         .sizes-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
         .sz {
             border: 1.5px solid #e0e0e0; border-radius: 5px;
@@ -114,7 +116,7 @@ function getImage(array $p): string {
         .sz-stock { font-size: 9px; color: #bbb; margin-bottom: 10px; }
         .sz-stock.low { color: #e63946; font-weight: 700; }
 
-        
+
         .prod-col { content-visibility: auto; contain-intrinsic-size: 0 500px; }
     </style>
 </head>
@@ -202,7 +204,7 @@ function getImage(array $p): string {
                 <div class="prod-img-wrap">
                     <a href="client/produit.php?id=<?= $product['ID_PRODUIT'] ?>">
                         <img src="<?= htmlspecialchars($img) ?>"
-                             alt="<?= htmlspecialchars($product['NOM_PRODUIT']) ?>"
+                             alt="<?= htmlspecialchars(ucwords(strtolower($product['NOM_PRODUIT']))) ?> — Velvet Fashion"
                              loading="lazy"
                              onerror="this.parentNode.innerHTML='<div class=\'prod-no-img\'><i class=\'fas fa-tshirt\'></i></div>'">
                     </a>

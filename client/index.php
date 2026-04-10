@@ -62,6 +62,22 @@ $stmt = $pdo->prepare("
 $stmt->execute([$clientId]);
 $favoris = $stmt->fetchAll();
 
+$taillesParProduit = [];
+if (!empty($favoris)) {
+    $ids = array_column($favoris, 'ID_PRODUIT');
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $stmtT = $pdo->prepare("
+        SELECT ID_PRODUIT, TAILLE, COULEUR, QUANTITE
+        FROM modele_produit
+        WHERE ID_PRODUIT IN ($placeholders)
+        ORDER BY FIELD(TAILLE,'XS','S','M','L','XL','XXL'), TAILLE
+    ");
+    $stmtT->execute($ids);
+    foreach ($stmtT->fetchAll() as $row) {
+        $taillesParProduit[$row['ID_PRODUIT']][] = $row;
+    }
+}
+
 
 function statutBadge(string $s): string {
     $map = [
@@ -87,7 +103,7 @@ function prixHTML(array $p): string {
 }
 ?>
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -222,6 +238,25 @@ function prixHTML(array $p): string {
             font-size: 11px;
             color: #ccc;
         }
+
+        
+        .sizes-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
+        .sz {
+            border: 1.5px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 3px 9px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #444;
+            user-select: none;
+        }
+        .sz:hover:not(.sz-out) { border-color: #000; background: #000; color: #fff; }
+        .sz.sz-active { border-color: #000; background: #000; color: #fff; }
+        .sz.sz-out { color: #ccc; border-color: #eee; cursor: not-allowed; text-decoration: line-through; }
+        .sz-stock { font-size: 9px; color: #bbb; margin-bottom: 10px; }
+        .sz-stock.low { color: #e63946; font-weight: 700; }
     </style>
 </head>
 <body>
@@ -292,6 +327,11 @@ function prixHTML(array $p): string {
                 $favImg   = $fav['IMAGE1'] ?: ($fav['IMAGE2'] ?: ($fav['IMAGE3'] ?: ''));
                 $favPromo = $fav['EN_PROMO'] && $fav['PRIX_PROMO'];
                 $favStock = (int)($fav['stock_total'] ?? 0);
+                $tailles = $taillesParProduit[$fav['ID_PRODUIT']] ?? [];
+                $firstAvail = null;
+                foreach ($tailles as $t) {
+                    if ($t['QUANTITE'] > 0) { $firstAvail = $t; break; }
+                }
             ?>
             <div class="col-6 col-md-3 reveal" id="fav-card-<?= $fav['ID_PRODUIT'] ?>">
                 <div class="prod-card">
@@ -331,6 +371,37 @@ function prixHTML(array $p): string {
                                 <span class="price-final"><?= number_format($fav['PRIX'], 0) ?> DH</span>
                             <?php endif; ?>
                         </div>
+                        
+                        <?php if (!empty($tailles)): ?>
+                        <div class="sizes-row" id="sizes-<?= $fav['ID_PRODUIT'] ?>">
+                            <?php foreach ($tailles as $t):
+                                $dispo  = $t['QUANTITE'] > 0;
+                                $active = ($firstAvail && $t['TAILLE'] === $firstAvail['TAILLE']);
+                                $cls    = 'sz';
+                                if (!$dispo)  $cls .= ' sz-out';
+                                elseif ($active) $cls .= ' sz-active';
+                            ?>
+                            <span class="<?= $cls ?>"
+                                  data-qty="<?= (int)$t['QUANTITE'] ?>"
+                                  onclick="selectSize(this, <?= $fav['ID_PRODUIT'] ?>)">
+                                <?= htmlspecialchars($t['TAILLE']) ?>
+                            </span>
+                            <?php endforeach; ?>
+                        </div>
+                        <p class="sz-stock <?= ($firstAvail && $firstAvail['QUANTITE'] <= 3) ? 'low' : '' ?>"
+                           id="stock-<?= $fav['ID_PRODUIT'] ?>">
+                            <?php if ($firstAvail): ?>
+                                <?php if ($firstAvail['QUANTITE'] <= 3): ?>
+                                    Plus que <?= $firstAvail['QUANTITE'] ?> en stock
+                                <?php else: ?>
+                                    En stock (<?= $firstAvail['QUANTITE'] ?> dispo.)
+                                <?php endif; ?>
+                            <?php elseif ($favStock <= 0): ?>
+                                <span style="color:#ccc;">Rupture de stock</span>
+                            <?php endif; ?>
+                        </p>
+                        <?php endif; ?>
+
                         <button class="btn-cart"
                                 data-add-cart="<?= $fav['ID_PRODUIT'] ?>"
                                 data-cart-id="<?= $fav['ID_PRODUIT'] ?>"
